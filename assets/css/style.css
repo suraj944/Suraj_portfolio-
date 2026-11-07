@@ -434,6 +434,30 @@ a.contact-value:hover { color: var(--accent); }
 .timeline-title .at { font-weight: 400; color: var(--text-2); }
 .timeline-text { margin-top: var(--s-2); font-size: var(--fs-sm); color: var(--text-2); max-width: 70ch; }
 
+.timeline-date .tag {
+  display: inline-block;
+  margin-left: var(--s-2);
+  padding: 1px var(--s-2);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  vertical-align: 1px;
+}
+
+.timeline-points { display: grid; gap: 6px; margin-top: var(--s-2); max-width: 70ch; font-size: var(--fs-sm); color: var(--text-2); }
+.timeline-points li { position: relative; padding-left: var(--s-4); }
+.timeline-points li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.65em;
+  width: 6px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text-3);
+}
+
 /* ---------- Skills ---------- */
 .skills { display: grid; gap: var(--s-5); }
 @media (min-width: 768px) { .skills { grid-template-columns: 1fr 1fr; column-gap: var(--s-6); } }
