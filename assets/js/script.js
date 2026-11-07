@@ -1,159 +1,185 @@
 'use strict';
 
+/* ---------- Section navigation ----------
+   Each tab links to its section by id (#about, #resume, #contact),
+   so tabs and pages are matched by name, not by position. Links work
+   without JavaScript, can be bookmarked, and the Back button works. */
+(function initTabs() {
+  const tabs = Array.from(document.querySelectorAll('[data-tab]'));
+  const pages = Array.from(document.querySelectorAll('[data-page]'));
+  const main = document.getElementById('main');
+  if (!tabs.length || !pages.length) return;
 
+  const names = pages.map((p) => p.dataset.page);
+  const fallback = names[0];
 
-// element toggle function
-const elementToggleFunc = function (elem) { elem.classList.toggle("active"); }
+  function show(name, { focus = false } = {}) {
+    if (!names.includes(name)) name = fallback;
 
+    pages.forEach((page) => {
+      const active = page.dataset.page === name;
+      page.hidden = !active;
+      page.classList.toggle('is-active', active);
+    });
 
+    tabs.forEach((tab) => {
+      if (tab.dataset.tab === name) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    });
 
-// sidebar variables
-const sidebar = document.querySelector("[data-sidebar]");
-const sidebarBtn = document.querySelector("[data-sidebar-btn]");
-
-// sidebar toggle functionality for mobile
-sidebarBtn.addEventListener("click", function () { elementToggleFunc(sidebar); });
-
-
-
-// testimonials variables
-const testimonialsItem = document.querySelectorAll("[data-testimonials-item]");
-const modalContainer = document.querySelector("[data-modal-container]");
-const modalCloseBtn = document.querySelector("[data-modal-close-btn]");
-const overlay = document.querySelector("[data-overlay]");
-
-// modal variable
-const modalImg = document.querySelector("[data-modal-img]");
-const modalTitle = document.querySelector("[data-modal-title]");
-const modalText = document.querySelector("[data-modal-text]");
-
-// modal toggle function
-const testimonialsModalFunc = function () {
-  modalContainer.classList.toggle("active");
-  overlay.classList.toggle("active");
-}
-
-// add click event to all modal items
-for (let i = 0; i < testimonialsItem.length; i++) {
-
-  testimonialsItem[i].addEventListener("click", function () {
-
-    modalImg.src = this.querySelector("[data-testimonials-avatar]").src;
-    modalImg.alt = this.querySelector("[data-testimonials-avatar]").alt;
-    modalTitle.innerHTML = this.querySelector("[data-testimonials-title]").innerHTML;
-    modalText.innerHTML = this.querySelector("[data-testimonials-text]").innerHTML;
-
-    testimonialsModalFunc();
-
-  });
-
-}
-
-// add click event to modal close button
-modalCloseBtn.addEventListener("click", testimonialsModalFunc);
-overlay.addEventListener("click", testimonialsModalFunc);
-
-
-
-// custom select variables
-const select = document.querySelector("[data-select]");
-const selectItems = document.querySelectorAll("[data-select-item]");
-const selectValue = document.querySelector("[data-selecct-value]");
-const filterBtn = document.querySelectorAll("[data-filter-btn]");
-
-select.addEventListener("click", function () { elementToggleFunc(this); });
-
-// add event in all select items
-for (let i = 0; i < selectItems.length; i++) {
-  selectItems[i].addEventListener("click", function () {
-
-    let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
-    elementToggleFunc(select);
-    filterFunc(selectedValue);
-
-  });
-}
-
-// filter variables
-const filterItems = document.querySelectorAll("[data-filter-item]");
-
-const filterFunc = function (selectedValue) {
-
-  for (let i = 0; i < filterItems.length; i++) {
-
-    if (selectedValue === "all") {
-      filterItems[i].classList.add("active");
-    } else if (selectedValue === filterItems[i].dataset.category) {
-      filterItems[i].classList.add("active");
-    } else {
-      filterItems[i].classList.remove("active");
+    if (focus && main) {
+      main.focus({ preventScroll: true });
+      const top = main.getBoundingClientRect().top + window.scrollY - 80;
+      if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top) });
     }
-
   }
 
-}
-
-// add event in all filter button items for large screen
-let lastClickedBtn = filterBtn[0];
-
-for (let i = 0; i < filterBtn.length; i++) {
-
-  filterBtn[i].addEventListener("click", function () {
-
-    let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
-    filterFunc(selectedValue);
-
-    lastClickedBtn.classList.remove("active");
-    this.classList.add("active");
-    lastClickedBtn = this;
-
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', (event) => {
+      event.preventDefault();
+      const name = tab.dataset.tab;
+      if (location.hash !== '#' + name) history.pushState(null, '', '#' + name);
+      show(name, { focus: true });
+    });
   });
 
-}
+  window.addEventListener('popstate', () => show(location.hash.slice(1)));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
 
+  show(location.hash.slice(1));
+})();
 
+/* ---------- Contact details toggle (small screens) ---------- */
+(function initContactsToggle() {
+  const toggle = document.querySelector('[data-contacts-toggle]');
+  const panel = document.querySelector('[data-contacts]');
+  if (!toggle || !panel) return;
 
-// contact form variables
-const form = document.querySelector("[data-form]");
-const formInputs = document.querySelectorAll("[data-form-input]");
-const formBtn = document.querySelector("[data-form-btn]");
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.classList.toggle('is-open', open);
+  });
+})();
 
-// add event to all form input field
-for (let i = 0; i < formInputs.length; i++) {
-  formInputs[i].addEventListener("input", function () {
+/* ---------- Contact form ----------
+   Validates fields with clear messages, then sends through FormSubmit's
+   AJAX endpoint so the visitor stays on the page and sees the result.
+   If JavaScript is off, the form still posts normally to FormSubmit. */
+(function initContactForm() {
+  const form = document.querySelector('[data-form]');
+  if (!form) return;
 
-    // check form validation
-    if (form.checkValidity()) {
-      formBtn.removeAttribute("disabled");
-    } else {
-      formBtn.setAttribute("disabled", "");
+  const button = form.querySelector('[data-form-btn]');
+  const label = form.querySelector('[data-form-btn-label]');
+  const status = form.querySelector('[data-form-status]');
+  const fields = Array.from(form.querySelectorAll('input[required], textarea[required]'));
+  const endpoint = form.action.replace('formsubmit.co/', 'formsubmit.co/ajax/');
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function errorFor(input) {
+    const value = input.value.trim();
+    const name = input.labels && input.labels[0] ? input.labels[0].textContent.trim() : 'This field';
+    if (!value) return name + ' is required.';
+    if (input.type === 'email' && !EMAIL_RE.test(value)) return 'Enter a valid email address, like name@example.com.';
+    if (input.minLength > 0 && value.length < input.minLength) return name + ' should be at least ' + input.minLength + ' characters.';
+    return '';
+  }
+
+  function setError(input, message) {
+    const field = input.closest('.field');
+    const slot = document.getElementById(input.getAttribute('aria-describedby'));
+    if (field) field.classList.toggle('has-error', Boolean(message));
+    if (slot) slot.textContent = message;
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+  }
+
+  function setStatus(kind, message) {
+    status.className = 'form-status' + (kind ? ' is-' + kind : '');
+    status.textContent = '';
+    if (!message) return;
+    const icon = kind === 'success' ? 'i-check' : 'i-alert';
+    status.insertAdjacentHTML('afterbegin', '<svg class="icon" aria-hidden="true"><use href="#' + icon + '"/></svg>');
+    const text = document.createElement('span');
+    text.textContent = message;
+    status.appendChild(text);
+  }
+
+  function setBusy(busy) {
+    button.disabled = busy;
+    button.setAttribute('aria-busy', String(busy));
+    label.textContent = busy ? 'Sending…' : 'Send message';
+  }
+
+  // Validate a field once the visitor leaves it, then live while they fix it.
+  fields.forEach((input) => {
+    input.addEventListener('blur', () => {
+      if (input.value.trim()) setError(input, errorFor(input));
+    });
+    input.addEventListener('input', () => {
+      if (input.getAttribute('aria-invalid') === 'true') setError(input, errorFor(input));
+    });
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setStatus('', '');
+
+    let firstInvalid = null;
+    fields.forEach((input) => {
+      const message = errorFor(input);
+      setError(input, message);
+      if (message && !firstInvalid) firstInvalid = input;
+    });
+    if (firstInvalid) {
+      firstInvalid.focus();
+      return;
     }
 
-  });
-}
+    if (!navigator.onLine) {
+      setStatus('error', "You appear to be offline. Check your connection and try again.");
+      return;
+    }
 
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (data._honey) return; // filled only by bots
 
+    setBusy(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
 
-// page navigation variables
-const navigationLinks = document.querySelectorAll("[data-nav-link]");
-const pages = document.querySelectorAll("[data-page]");
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data),
+        signal: controller.signal,
+      });
+      const result = await response.json().catch(() => ({}));
+      const ok = response.ok && String(result.success) === 'true';
 
-// add event to all nav link
-for (let i = 0; i < navigationLinks.length; i++) {
-  navigationLinks[i].addEventListener("click", function () {
-
-    for (let i = 0; i < pages.length; i++) {
-      if (this.innerHTML.toLowerCase() === pages[i].dataset.page) {
-        pages[i].classList.add("active");
-        navigationLinks[i].classList.add("active");
-        window.scrollTo(0, 0);
+      if (ok) {
+        form.reset();
+        fields.forEach((input) => setError(input, ''));
+        setStatus('success', "Thanks! Your message has been sent. I'll reply by email soon.");
       } else {
-        pages[i].classList.remove("active");
-        navigationLinks[i].classList.remove("active");
+        const reason = result && result.message ? ' (' + result.message + ')' : '';
+        setStatus('error', 'Your message could not be sent' + reason + '. Please try again, or email surajsingh511921@gmail.com directly.');
       }
+    } catch (err) {
+      const timedOut = err && err.name === 'AbortError';
+      setStatus('error', (timedOut ? 'The request timed out.' : 'Something went wrong while sending.') +
+        ' Please try again, or email surajsingh511921@gmail.com directly.');
+    } finally {
+      clearTimeout(timer);
+      setBusy(false);
     }
-
   });
-}
+})();
+
+/* ---------- Footer year ---------- */
+(function initYear() {
+  const el = document.querySelector('[data-year]');
+  if (el) el.textContent = String(new Date().getFullYear());
+})();

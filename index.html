@@ -3,1047 +3,325 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suraj Singh - Data Analyst</title>
+  <title>Suraj Singh – Data Analyst &amp; MIS Specialist</title>
+  <meta name="description" content="Suraj Singh, Data Analyst and MIS specialist in Thane, India. Reporting, dashboards, data analysis and automation with Excel, Power BI, Python and SQL.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
 
-  <!--
-    - favicon
-  -->
-  <link rel="shortcut icon" href="./assets/images/logo.ico" type="image/x-icon">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Suraj Singh – Data Analyst &amp; MIS Specialist">
+  <meta property="og:description" content="Reporting, dashboards, data analysis and automation with Excel, Power BI, Python and SQL.">
+  <meta property="og:image" content="./assets/images/my-avatar.png">
 
-  <!--
-    - custom css link
-  -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="icon" href="./assets/images/logo.ico" type="image/x-icon">
 
-  <!--
-    - google font link
-  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body>
 
-  <!--
-    - #MAIN
-  -->
+  <!-- Icon sprite: one inline set so the page needs no icon library -->
+  <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18h3"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+      <symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-report" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></symbol>
+      <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="5" rx="1.5"/><rect x="13.5" y="11.5" width="7" height="9" rx="1.5"/><rect x="3.5" y="15.5" width="7" height="5" rx="1.5"/></symbol>
+      <symbol id="i-auto" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></symbol>
+      <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 12.5h18"/></symbol>
+      <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2.5 9 9.5-4.5L21.5 9 12 13.5Z"/><path d="M6.5 11v4.5c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3V11M21.5 9v5"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5-7.5-4Z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.7"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
+    </defs>
+  </svg>
 
-  <main>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <!--
-      - #SIDEBAR
-    -->
+  <div class="layout">
 
-    <aside class="sidebar" data-sidebar>
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar" aria-label="Profile">
 
-      <div class="sidebar-info">
+      <div class="profile">
+        <img class="profile-avatar" src="./assets/images/my-avatar.png" alt="Portrait of Suraj Singh" width="96" height="94">
 
-        <figure class="avatar-box">
-          <img src="./assets/images/my-avatar.png" alt="Suraj singh" width="80">
-        </figure>
-
-        <div class="info-content">
-          <h1 class="name" title="Suraj singh">Suraj singh</h1>
-
-          <p class="title">Data Analyst</p>
+        <div class="profile-text">
+          <h1 class="profile-name">Suraj Singh</h1>
+          <p class="profile-role">Data Analyst &amp; MIS Specialist</p>
         </div>
 
-        <button class="info_more-btn" data-sidebar-btn>
-          <span>Show Contacts</span>
-
-          <ion-icon name="chevron-down"></ion-icon>
+        <button class="contacts-toggle" type="button" aria-expanded="false" aria-controls="contacts" data-contacts-toggle>
+          <span>Contact details</span>
+          <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
-
       </div>
 
-      <div class="sidebar-info_more">
-
-        <div class="separator"></div>
-
-        <ul class="contacts-list">
-
+      <div class="contacts" id="contacts" data-contacts>
+        <ul class="contact-list">
           <li class="contact-item">
-
-            <div class="icon-box">
-              <ion-icon name="mail-outline"></ion-icon>
+            <span class="contact-icon" aria-hidden="true"><svg class="icon"><use href="#i-mail"/></svg></span>
+            <div class="contact-body">
+              <p class="contact-label">Email</p>
+              <a class="contact-value" href="mailto:surajsingh511921@gmail.com">surajsingh511921@gmail.com</a>
             </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Email</p>
-
-              <a href="mailto:surajsingh511921@gmail.com" class="contact-link">surajsingh511921@gmail.com</a>
-            </div>
-
           </li>
-
           <li class="contact-item">
-
-            <div class="icon-box">
-              <ion-icon name="phone-portrait-outline"></ion-icon>
+            <span class="contact-icon" aria-hidden="true"><svg class="icon"><use href="#i-phone"/></svg></span>
+            <div class="contact-body">
+              <p class="contact-label">Phone</p>
+              <a class="contact-value" href="tel:+917433866286">+91&nbsp;74338&nbsp;66286</a>
             </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Phone</p>
-
-              <a href="tel:+91743386286" class="contact-link">+91 743386286</a>
-            </div>
-
           </li>
-
           <li class="contact-item">
-
-            <div class="icon-box">
-              <ion-icon name="calendar-outline"></ion-icon>
+            <span class="contact-icon" aria-hidden="true"><svg class="icon"><use href="#i-calendar"/></svg></span>
+            <div class="contact-body">
+              <p class="contact-label">Birthday</p>
+              <time class="contact-value" datetime="2003-03-04">March 4, 2003</time>
             </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Birthday</p>
-
-              <time datetime="1982-06-23">March 04, 2003</time>
-            </div>
-
           </li>
-
           <li class="contact-item">
-
-            <div class="icon-box">
-              <ion-icon name="location-outline"></ion-icon>
+            <span class="contact-icon" aria-hidden="true"><svg class="icon"><use href="#i-pin"/></svg></span>
+            <div class="contact-body">
+              <p class="contact-label">Location</p>
+              <address class="contact-value">Thane, Maharashtra, India</address>
             </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Location</p>
-
-              <address>Thane, Maharashtra, India</address>
-            </div>
-
           </li>
-
         </ul>
 
-        <div class="separator"></div>
-
-        <ul class="social-list">
-
-          <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-facebook"></ion-icon>
-            </a>
-          </li>
-
-          <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-twitter"></ion-icon>
-            </a>
-          </li>
-
-          <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-instagram"></ion-icon>
-            </a>
-          </li>
-
-        </ul>
-
+        <a class="profile-link" href="https://github.com/suraj944" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>
+          <span>GitHub · suraj944</span>
+        </a>
       </div>
 
     </aside>
 
+    <!-- ===================== MAIN ===================== -->
+    <div class="main">
 
-
-
-
-    <!--
-      - #main-content
-    -->
-
-    <div class="main-content">
-
-      <!--
-        - #NAVBAR
-      -->
-
-      <nav class="navbar">
-
-        <ul class="navbar-list">
-
-          <li class="navbar-item">
-            <button class="navbar-link  active" data-nav-link>About</button>
-          </li>
-
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Resume</button>
-          </li>
-
-          
-
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Blog</button>
-          </li>
-
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Contact</button>
-          </li>
-
+      <nav class="tabs" aria-label="Sections">
+        <ul class="tabs-list">
+          <li><a class="tab" href="#about" data-tab="about" aria-current="page">About</a></li>
+          <li><a class="tab" href="#resume" data-tab="resume">Resume</a></li>
+          <li><a class="tab" href="#contact" data-tab="contact">Contact</a></li>
         </ul>
-
       </nav>
 
-      <!--
-        - #ABOUT
-      -->
-
-      <article class="about  active" data-page="about">
-
-        <header>
-          <h2 class="h2 article-title">About me</h2>
-        </header>
-
-        <section class="about-text">
-          <p>
-            MIS Executive with 3.5 years of experience in data reporting, dashboard creation, and business operations support. Skilled in
-            Advanced Excel (VLOOKUP, HLOOKUP, Pivot Tables, XLOOKUP), data analysis, and report automation. Experienced in handling large
-            datasets.
-          </p>
-
-          <p>
-            I am a Data Analyst and MIS Professional passionate about turning data into actionable insights. I help businesses optimize their operations through advanced reporting, dashboard development, data automation, and business intelligence solutions.
-            
-      
-          </p>
-        </section>
-
-
-        <!--
-          - service
-        -->
-
-        <section class="service">
-
-          <h3 class="h3 service-title">What i'm doing</h3>
-
-          <ul class="service-list">
-
-            <li class="service-item">
-
-              <div class="service-icon-box">
-                <img src="./assets/images/icon-design.svg
-                " alt="design icon" width="40">
-              </div>
-
-              <div class="service-content-box">
-                <h4 class="h4 service-item-title">MIS Reporting</h4>
-
-                <p class="service-item-text">
-                  Creating comprehensive reports and dashboards to drive business insights.
-                </p>
-              </div>
-
-            </li>
-
-            <li class="service-item">
-
-              <div class="service-icon-box">
-                <img src="./assets/images/icon-dev.svg" alt="Web development icon" width="40">
-              </div>
-
-              <div class="service-content-box">
-                <h4 class="h4 service-item-title">Data Analysis</h4>
-
-                <p class="service-item-text">
-                  Analyzing complex datasets to extract meaningful insights and support decision-making.
-                </p>
-              </div>
-
-            </li>
-
-            <li class="service-item">
-
-              <div class="service-icon-box">
-                <img src="./assets/images/icon-app.svg" alt="mobile app icon" width="40">
-              </div>
-
-              <div class="service-content-box">
-                <h4 class="h4 service-item-title">Dashboard Development</h4>
-
-                <p class="service-item-text">
-                  Professional development of interactive dashboards for data visualization.
-                </p>
-              </div>
-
-            </li>
-
-            <li class="service-item">
-
-              <div class="service-icon-box">
-                <img src="./assets/images/icon-photo.svg" alt="camera icon" width="40">
-              </div>
-
-              <div class="service-content-box">
-                <h4 class="h4 service-item-title">Data Automation</h4>
-
-                <p class="service-item-text">
-                  Automating repetitive reporting tasks using Excel VBA, Python, SQL, and data processing tools to improve efficiency and accuracy.
-                </p>
-              </div>
-
-            </li>
-
-          </ul>
-
-        </section>
-
-
-        <!--
-          - testimonials
-        -->
-
-        <section class="testimonials">
-
-          <h3 class="h3 testimonials-title">Testimonials</h3>
-
-          <ul class="testimonials-list has-scrollbar">
-
-            <li class="testimonials-item">
-              <div class="content-card" data-testimonials-item>
-
-                <figure class="testimonials-avatar-box">
-                  <img src="./assets/images/avatar-1.png" alt="Daniel lewis" width="60" data-testimonials-avatar>
-                </figure>
-
-                <h4 class="h4 testimonials-item-title" data-testimonials-title>Suraj Singh</h4>
-
-                <div class="testimonials-text" data-testimonials-text>
-                  <p>
-                    Suraj Singh is a skilled Data Analyst with expertise in data analysis, reporting, dashboard development, and business intelligence. His analytical mindset, dedication, and ability to convert raw data into valuable insights make him a valuable asset to any organization.
-                  </p>
-                </div>
-
-              </div>
-            </li>
-
-
-            
-
-          </ul>
-
-        </section>
-
-
-        <!--
-          - testimonials modal
-        -->
-
-        <div class="modal-container" data-modal-container>
-
-          <div class="overlay" data-overlay></div>
-
-          <section class="testimonials-modal">
-
-            <button class="modal-close-btn" data-modal-close-btn>
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-
-            <div class="modal-img-wrapper">
-              <figure class="modal-avatar-box">
-                <img src="./assets/images/avatar-1.png" alt="Daniel lewis" width="80" data-modal-img>
-              </figure>
-
-              <img src="./assets/images/icon-quote.svg" alt="quote icon">
-            </div>
-
-            <div class="modal-content">
-
-              <h4 class="h3 modal-title" data-modal-title>Suraj Singh</h4>
-
-              <time datetime="2021-06-14">14 June, 2021</time>
-
-              <div data-modal-text>
-                <p>
-                  Suraj Singh is a skilled Data Analyst with expertise in data analysis, reporting, dashboard development, and business intelligence. His analytical mindset, dedication, and ability to convert raw data into valuable insights make him a valuable asset to any organization.
-                </p>
-              </div>
-
-            </div>
-
-          </section>
-
-        </div>
-
-
-        <!--
-          - clients
-        -->
-
-        
-      </article>
-
-
-
-
-
-      <!--
-        - #RESUME
-      -->
-
-      <article class="resume" data-page="resume">
-
-        <header>
-          <h2 class="h2 article-title">Resume</h2>
-        </header>
-
-        <section class="timeline">
-
-          <div class="title-wrapper">
-            <div class="icon-box">
-              <ion-icon name="book-outline"></ion-icon>
-            </div>
-
-            <h3 class="h3">Education</h3>
+      <main id="main" tabindex="-1">
+
+        <!-- ---------- ABOUT ---------- -->
+        <section class="page is-active" id="about" data-page="about" aria-labelledby="about-title">
+          <header class="page-header">
+            <h2 class="page-title" id="about-title">About me</h2>
+          </header>
+
+          <div class="prose">
+            <p>
+              MIS Executive with 3.5+ years of experience in data reporting, dashboard creation and business operations
+              support. Skilled in Advanced Excel (VLOOKUP, HLOOKUP, XLOOKUP, Pivot Tables), data analysis and report
+              automation, and experienced in handling large datasets.
+            </p>
+            <p>
+              I'm a Data Analyst and MIS professional who turns data into actionable insights. I help businesses run
+              better through reliable reporting, dashboard development, data automation and business intelligence.
+            </p>
           </div>
 
-          <ol class="timeline-list">
+          <h3 class="section-title">What I do</h3>
 
-            <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Bachelor of Computer Application (BCA)</h4>
-
-              <span>2020 — 2023</span>
-
-              <p class="timeline-text">
-                Completed a Bachelor's degree in Computer Applications with a strong foundation in programming, database management, software development, and information systems. Developed analytical and technical skills that support data reporting, automation, and business intelligence solutions. , Sahyog College, Thane.  
-              </p>
-
+          <ul class="card-grid">
+            <li class="card service">
+              <span class="service-icon" aria-hidden="true"><svg class="icon"><use href="#i-report"/></svg></span>
+              <div>
+                <h4 class="card-title">MIS Reporting</h4>
+                <p class="card-text">Comprehensive reports and dashboards that drive business insight.</p>
+              </div>
             </li>
+            <li class="card service">
+              <span class="service-icon" aria-hidden="true"><svg class="icon"><use href="#i-chart"/></svg></span>
+              <div>
+                <h4 class="card-title">Data Analysis</h4>
+                <p class="card-text">Analysing complex datasets to extract meaningful insights and support decisions.</p>
+              </div>
+            </li>
+            <li class="card service">
+              <span class="service-icon" aria-hidden="true"><svg class="icon"><use href="#i-dashboard"/></svg></span>
+              <div>
+                <h4 class="card-title">Dashboard Development</h4>
+                <p class="card-text">Interactive dashboards for clear, at-a-glance data visualisation.</p>
+              </div>
+            </li>
+            <li class="card service">
+              <span class="service-icon" aria-hidden="true"><svg class="icon"><use href="#i-auto"/></svg></span>
+              <div>
+                <h4 class="card-title">Data Automation</h4>
+                <p class="card-text">Automating repetitive reporting with Excel VBA, Python, SQL and data-processing tools for speed and accuracy.</p>
+              </div>
+            </li>
+          </ul>
 
-            
-
-            
-
-          </ol>
-
+          <h3 class="section-title" id="tools-title">Tools I work with</h3>
+          <ul class="chips" aria-labelledby="tools-title">
+            <li class="chip">Advanced Excel</li>
+            <li class="chip">Excel VBA</li>
+            <li class="chip">Power BI</li>
+            <li class="chip">Python</li>
+            <li class="chip">SQL</li>
+            <li class="chip">Web scraping</li>
+          </ul>
         </section>
 
-        <section class="timeline">
+        <!-- ---------- RESUME ---------- -->
+        <section class="page" id="resume" data-page="resume" aria-labelledby="resume-title" hidden>
+          <header class="page-header">
+            <h2 class="page-title" id="resume-title">Resume</h2>
+          </header>
 
-          <div class="title-wrapper">
-            <div class="icon-box">
-              <ion-icon name="book-outline"></ion-icon>
+          <div class="timeline-block">
+            <h3 class="section-title with-icon">
+              <span class="section-icon" aria-hidden="true"><svg class="icon"><use href="#i-briefcase"/></svg></span>
+              Experience <span class="muted">· 3.5+ years</span>
+            </h3>
+
+            <ol class="timeline">
+              <li class="timeline-item">
+                <p class="timeline-date">2026 – Present</p>
+                <h4 class="timeline-title">Freelance Data Automation &amp; MIS Specialist</h4>
+                <p class="timeline-text">
+                  Data automation, web scraping, dashboard development and reporting solutions using Python, Excel, VBA
+                  and Power BI. Helping businesses streamline operations through automated reporting and data-driven
+                  insights.
+                </p>
+              </li>
+              <li class="timeline-item">
+                <p class="timeline-date">2024 – 2025</p>
+                <h4 class="timeline-title">Senior MIS Analyst &amp; Developer <span class="at">· Elitebrand Hub</span></h4>
+                <p class="timeline-text">
+                  Report automation, dashboard development, data analysis and business process optimisation. Built
+                  custom reporting solutions and web scraping tools to improve efficiency and decision-making.
+                </p>
+              </li>
+              <li class="timeline-item">
+                <p class="timeline-date">2022 – 2024</p>
+                <h4 class="timeline-title">MIS Executive <span class="at">· Qconnect</span></h4>
+                <p class="timeline-text">
+                  Managed PAN-India reporting operations for Tata Capital, developed MIS reports, analysed business data
+                  and worked with stakeholders to support operational and strategic decisions.
+                </p>
+              </li>
+            </ol>
+          </div>
+
+          <div class="timeline-block">
+            <h3 class="section-title with-icon">
+              <span class="section-icon" aria-hidden="true"><svg class="icon"><use href="#i-cap"/></svg></span>
+              Education
+            </h3>
+
+            <ol class="timeline">
+              <li class="timeline-item">
+                <p class="timeline-date">2020 – 2023</p>
+                <h4 class="timeline-title">Bachelor of Computer Applications (BCA) <span class="at">· Sahyog College, Thane</span></h4>
+                <p class="timeline-text">
+                  A strong foundation in programming, database management, software development and information
+                  systems, building the analytical and technical skills behind my reporting, automation and business
+                  intelligence work.
+                </p>
+              </li>
+            </ol>
+          </div>
+
+          <h3 class="section-title">Skills</h3>
+          <ul class="card skills">
+            <li class="skill">
+              <div class="skill-head"><span id="sk1">Advanced Excel</span><data value="90">90%</data></div>
+              <div class="meter" role="meter" aria-labelledby="sk1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><span style="--v: 90%"></span></div>
+            </li>
+            <li class="skill">
+              <div class="skill-head"><span id="sk2">Python &amp; SQL</span><data value="85">85%</data></div>
+              <div class="meter" role="meter" aria-labelledby="sk2" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85"><span style="--v: 85%"></span></div>
+            </li>
+            <li class="skill">
+              <div class="skill-head"><span id="sk3">Power BI</span><data value="80">80%</data></div>
+              <div class="meter" role="meter" aria-labelledby="sk3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><span style="--v: 80%"></span></div>
+            </li>
+            <li class="skill">
+              <div class="skill-head"><span id="sk4">Data Analysis &amp; Automation</span><data value="80">80%</data></div>
+              <div class="meter" role="meter" aria-labelledby="sk4" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><span style="--v: 80%"></span></div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ---------- CONTACT ---------- -->
+        <section class="page" id="contact" data-page="contact" aria-labelledby="contact-title" hidden>
+          <header class="page-header">
+            <h2 class="page-title" id="contact-title">Contact</h2>
+          </header>
+
+          <p class="lead">Have a reporting, dashboard or automation project in mind? Send a message and I'll get back to you by email.</p>
+
+          <form class="form" action="https://formsubmit.co/surajsingh511921@gmail.com" method="POST" novalidate data-form>
+            <input type="hidden" name="_subject" value="New message from your portfolio">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <div class="form-row">
+              <div class="field">
+                <label for="f-name">Full name</label>
+                <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="f-name-err">
+                <p class="field-error" id="f-name-err" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="f-email">Email address</label>
+                <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="150" aria-describedby="f-email-err">
+                <p class="field-error" id="f-email-err" aria-live="polite"></p>
+              </div>
             </div>
 
-            <h3 class="h3">Professional Experience  3.5+ Years</h3>
-          </div>
-
-          <ol class="timeline-list">
-
-            <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Freelance Data Automation & MIS Specialist</h4>
-
-              <span>2026 — Present</span>
-
-              <p class="timeline-text">
-                Providing data automation, web scraping, dashboard development, and reporting solutions using Python, Excel, VBA, and Power BI. Helping businesses streamline operations through automated reporting and data-driven insights.
-              </p>
-
-            </li>
-
-            <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Senior MIS Analyst & Developer at Elitebrand Hub</h4>
-
-              <span>2024 — 2025</span>
-
-              <p class="timeline-text">
-                Specialized in report automation, dashboard development, data analysis, and business process optimization. Built custom reporting solutions and web scraping tools to improve efficiency and decision-making.
-              </p>
-
-            </li>
-
-            <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">MIS Executive at Qconnect</h4>
-
-              <span>2022 — 2024</span>
-
-              <p class="timeline-text">
-                Managed PAN India reporting operations for Tata Capital, developed MIS reports, analyzed business data, and collaborated with stakeholders to support operational and strategic decisions.
-              </p>
-
-            </li>
-
-          </ol>
-
-        </section>
-
-        <section class="skill">
-
-          <h3 class="h3 skills-title">My skills</h3>
-
-          <ul class="skills-list content-card">
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Advanced Excel</h5>
-                <data value="90">90%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 90%;"></div>
-              </div>
-
-            </li>
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Power BI</h5>
-                <data value="80">80%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 80%;"></div>
-              </div>
-
-            </li>
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Python & SQL</h5>
-                <data value="85">85%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 85%;"></div>
-              </div>
-
-            </li>
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Data Analysis & Automation</h5>
-                <data value="80">80%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 80%;"></div>
-              </div>
-
-            </li>
-
-          </ul>
-
-        </section>
-
-      </article>
-
-
-
-
-
-      <!--
-        - #PORTFOLIO
-      -->
-
-      <article class="portfolio" data-page="portfolio">
-
-        <header>
-          <h2 class="h2 article-title">Portfolio</h2>
-        </header>
-
-        <section class="projects">
-
-          <ul class="filter-list">
-
-            <li class="filter-item">
-              <button class="active" data-filter-btn>All</button>
-            </li>
-
-            <li class="filter-item">
-              <button data-filter-btn>Web design</button>
-            </li>
-
-            <li class="filter-item">
-              <button data-filter-btn>Applications</button>
-            </li>
-
-            <li class="filter-item">
-              <button data-filter-btn>Web development</button>
-            </li>
-
-          </ul>
-
-          <div class="filter-select-box">
-
-            <button class="filter-select" data-select>
-
-              <div class="select-value" data-selecct-value>Select category</div>
-
-              <div class="select-icon">
-                <ion-icon name="chevron-down"></ion-icon>
-              </div>
-
-            </button>
-
-            <ul class="select-list">
-
-              <li class="select-item">
-                <button data-select-item>All</button>
-              </li>
-
-              <li class="select-item">
-                <button data-select-item>Web design</button>
-              </li>
-
-              <li class="select-item">
-                <button data-select-item>Applications</button>
-              </li>
-
-              <li class="select-item">
-                <button data-select-item>Web development</button>
-              </li>
-
-            </ul>
-
-          </div>
-
-          <ul class="project-list">
-
-            <li class="project-item  active" data-filter-item data-category="web development">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-1.jpg" alt="finance" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Finance</h3>
-
-                <p class="project-category">Web development</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web development">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-2.png" alt="orizon" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Orizon</h3>
-
-                <p class="project-category">Web development</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web design">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-3.jpg" alt="fundo" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Fundo</h3>
-
-                <p class="project-category">Web design</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="applications">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-4.png" alt="brawlhalla" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Brawlhalla</h3>
-
-                <p class="project-category">Applications</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web design">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-5.png" alt="dsm." loading="lazy">
-                </figure>
-
-                <h3 class="project-title">DSM.</h3>
-
-                <p class="project-category">Web design</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web design">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-6.png" alt="metaspark" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">MetaSpark</h3>
-
-                <p class="project-category">Web design</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web development">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-7.png" alt="summary" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Summary</h3>
-
-                <p class="project-category">Web development</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="applications">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-8.jpg" alt="task manager" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Task Manager</h3>
-
-                <p class="project-category">Applications</p>
-
-              </a>
-            </li>
-
-            <li class="project-item  active" data-filter-item data-category="web development">
-              <a href="#">
-
-                <figure class="project-img">
-                  <div class="project-item-icon-box">
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </div>
-
-                  <img src="./assets/images/project-9.png" alt="arrival" loading="lazy">
-                </figure>
-
-                <h3 class="project-title">Arrival</h3>
-
-                <p class="project-category">Web development</p>
-
-              </a>
-            </li>
-
-          </ul>
-
-        </section>
-
-      </article>
-
-
-
-
-
-      <!--
-        - #BLOG
-      -->
-
-      <article class="blog" data-page="blog">
-
-        <header>
-          <h2 class="h2 article-title">Blog</h2>
-        </header>
-        <h3 class="h3">🚧 Page Under Construction</h3>
-        <br>
-        <h4 class="h4 timeline-item-title">We're currently working on creating amazing blog content. Please check back soon for updates, articles, and insights.</h4>
-
-        <section class="blog-posts">
-
-          <!-- <ul class="blog-posts-list">
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-1.jpg" alt="Design conferences in 2022" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">Design conferences in 2022</h3>
-
-                  <p class="blog-text">
-                    Veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-2.jpg" alt="Best fonts every designer" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">Best fonts every designer</h3>
-
-                  <p class="blog-text">
-                    Sed ut perspiciatis, nam libero tempore, cum soluta nobis est eligendi.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-3.jpg" alt="Design digest #80" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">Design digest #80</h3>
-
-                  <p class="blog-text">
-                    Excepteur sint occaecat cupidatat no proident, quis nostrum exercitationem ullam corporis suscipit.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-4.jpg" alt="UI interactions of the week" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">UI interactions of the week</h3>
-
-                  <p class="blog-text">
-                    Enim ad minim veniam, consectetur adipiscing elit, quis nostrud exercitation ullamco laboris nisi.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-5.jpg" alt="The forgotten art of spacing" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">The forgotten art of spacing</h3>
-
-                  <p class="blog-text">
-                    Maxime placeat, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-            <li class="blog-post-item">
-              <a href="#">
-
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/blog-6.jpg" alt="Design digest #79" loading="lazy">
-                </figure>
-
-                <div class="blog-content">
-
-                  <div class="blog-meta">
-                    <p class="blog-category">Design</p>
-
-                    <span class="dot"></span>
-
-                    <time datetime="2022-02-23">Fab 23, 2022</time>
-                  </div>
-
-                  <h3 class="h3 blog-item-title">Design digest #79</h3>
-
-                  <p class="blog-text">
-                    Optio cumque nihil impedit uo minus quod maxime placeat, velit esse cillum.
-                  </p>
-
-                </div>
-
-              </a>
-            </li>
-
-          </ul> -->
-
-        </section>
-
-      </article>
-
-
-
-
-
-      <!--
-        - #CONTACT
-      -->
-
-      <article class="contact" data-page="contact">
-
-        <header>
-          <h2 class="h2 article-title">Contact</h2>
-        </header>
-
-        <section class="mapbox" data-mapbox>
-          <figure>
-            <iframe
-              src="https://www.google.com/maps?q=Thane,Maharashtra,India&output=embed"
-              width="400" height="300" loading="lazy"></iframe>
+            <div class="field">
+              <label for="f-message">Message</label>
+              <textarea id="f-message" name="message" rows="5" required minlength="10" maxlength="3000" aria-describedby="f-message-err"></textarea>
+              <p class="field-error" id="f-message-err" aria-live="polite"></p>
+            </div>
+
+            <div class="form-footer">
+              <div class="form-status" role="status" aria-live="polite" data-form-status></div>
+              <button class="btn btn-primary" type="submit" data-form-btn>
+                <svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>
+                <span data-form-btn-label>Send message</span>
+              </button>
+            </div>
+          </form>
+
+          <figure class="map">
+            <iframe title="Map of Thane, Maharashtra, India"
+              src="https://www.google.com/maps?q=Thane,Maharashtra,India&amp;output=embed"
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </figure>
         </section>
 
-        <section class="contact-form">
+      </main>
 
-          <h3 class="h3 form-title">Contact Form</h3>
-
-          <form action="https://formsubmit.co/surajsingh511921@gmail.com" method="POST" class="form" data-form>
-
-            <div class="input-wrapper">
-              <input type="text" name="fullname" class="form-input" placeholder="Full name" required data-form-input>
-
-              <input type="email" name="email" class="form-input" placeholder="Email address" required data-form-input>
-            </div>
-
-            <textarea name="message" class="form-input" placeholder="Your Message" required data-form-input></textarea>
-
-            <button class="form-btn" type="submit" disabled data-form-btn>
-              <ion-icon name="paper-plane"></ion-icon>
-              <span>Send Message</span>
-            </button>
-
-          </form>
-
-        </section>
-
-      </article>
+      <footer class="footer">
+        <p>© <span data-year>2026</span> Suraj Singh · Thane, India</p>
+      </footer>
 
     </div>
+  </div>
 
-  </main>
-
-
-
-
-
-
-  <!--
-    - custom js link
-  -->
-  <script src="./assets/js/script.js"></script>
-
-  <!--
-    - ionicon link
-  -->
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
+  <script src="./assets/js/script.js" defer></script>
 </body>
 
 </html>
