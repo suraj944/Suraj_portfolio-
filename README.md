@@ -47,3 +47,8 @@ message from the live site, then click the activation link FormSubmit emails to
 surajsingh511921@gmail.com. Until then the form shows an error that explains this.
 
 <img src="./website-demo-image/mobile.png" alt="Mobile view" width="280">
+
+## Updating CSS or JavaScript
+
+`index.html` loads `style.css?v=2` and `script.js?v=2`. When you change either file, raise the number
+(`?v=3`, …) so returning visitors' browsers fetch the new file instead of a cached copy.
