@@ -43,6 +43,9 @@
       <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2.5 9 9.5-4.5L21.5 9 12 13.5Z"/><path d="M6.5 11v4.5c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3V11M21.5 9v5"/></symbol>
       <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5-7.5-4Z"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.7"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
       <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
     </defs>
   </svg>
@@ -115,6 +118,7 @@
         <ul class="tabs-list">
           <li><a class="tab" href="#about" data-tab="about" aria-current="page">About</a></li>
           <li><a class="tab" href="#resume" data-tab="resume">Resume</a></li>
+          <li><a class="tab" href="#projects" data-tab="projects">Projects</a></li>
           <li><a class="tab" href="#contact" data-tab="contact">Contact</a></li>
         </ul>
       </nav>
@@ -261,6 +265,27 @@
               <div class="skill-head"><span id="sk4">Data Analysis &amp; Automation</span><data value="80">80%</data></div>
               <div class="meter" role="meter" aria-labelledby="sk4" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><span style="--v: 80%"></span></div>
             </li>
+          </ul>
+        </section>
+
+        <!-- ---------- PROJECTS ---------- -->
+        <section class="page" id="projects" data-page="projects" aria-labelledby="projects-title" hidden>
+          <header class="page-header">
+            <h2 class="page-title" id="projects-title">Projects</h2>
+          </header>
+
+          <p class="lead">My public work on GitHub. This list is loaded live from
+            <a href="https://github.com/suraj944" target="_blank" rel="noopener">github.com/suraj944</a>, so new repositories appear here automatically.</p>
+
+          <div class="filters" role="group" aria-label="Filter projects by language" data-project-filters hidden></div>
+
+          <div class="projects-status" role="status" aria-live="polite" data-projects-status></div>
+
+          <ul class="project-grid" data-projects aria-busy="true">
+            <li class="card project is-skeleton" aria-hidden="true"><span></span><span></span><span></span></li>
+            <li class="card project is-skeleton" aria-hidden="true"><span></span><span></span><span></span></li>
+            <li class="card project is-skeleton" aria-hidden="true"><span></span><span></span><span></span></li>
+            <li class="card project is-skeleton" aria-hidden="true"><span></span><span></span><span></span></li>
           </ul>
         </section>
 

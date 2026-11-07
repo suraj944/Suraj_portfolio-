@@ -183,3 +183,143 @@
   const el = document.querySelector('[data-year]');
   if (el) el.textContent = String(new Date().getFullYear());
 })();
+
+/* ---------- Projects ----------
+   Lists public, non-fork repositories from GitHub's public API.
+   Loads the first time the Projects tab is opened, caches for 10 minutes,
+   and shows loading, empty, error and rate-limit states. */
+(function initProjects() {
+  const USER = 'suraj944';
+  const API = 'https://api.github.com/users/' + USER + '/repos?per_page=100&sort=pushed';
+  const PROFILE = 'https://github.com/' + USER;
+  const CACHE_KEY = 'projects:' + USER;
+  const CACHE_MS = 10 * 60 * 1000;
+
+  const page = document.querySelector('[data-page="projects"]');
+  const grid = document.querySelector('[data-projects]');
+  const status = document.querySelector('[data-projects-status]');
+  const filterBar = document.querySelector('[data-project-filters]');
+  if (!page || !grid || !status || !filterBar) return;
+
+  const skeleton = grid.innerHTML;
+  let repos = null;
+  let loading = false;
+  let activeLang = 'All';
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeUrl = (u) => { try { const x = new URL(u); return x.protocol === 'https:' || x.protocol === 'http:' ? x.href : ''; } catch { return ''; } };
+  const prettyName = (n) => { const t = n.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
+  const fmtDate = (d) => new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
+  const icon = (id) => '<svg class="icon" aria-hidden="true"><use href="#' + id + '"/></svg>';
+
+  function showStatus(iconId, message, action) {
+    grid.innerHTML = '';
+    grid.setAttribute('aria-busy', 'false');
+    status.innerHTML = icon(iconId) + '<p>' + message + '</p>' + (action || '');
+  }
+
+  function render() {
+    const list = activeLang === 'All' ? repos : repos.filter((r) => (r.language || 'Other') === activeLang);
+    status.innerHTML = '';
+    grid.setAttribute('aria-busy', 'false');
+    grid.innerHTML = list.map((r) => {
+      const desc = r.description ? esc(r.description) : 'No description yet.';
+      const live = safeUrl(r.homepage);
+      const code = safeUrl(r.html_url);
+      return '<li class="card project">' +
+        '<div class="project-head"><span class="project-icon" aria-hidden="true">' + icon('i-folder') + '</span>' +
+        '<h3 class="project-title">' + esc(prettyName(r.name)) + '</h3></div>' +
+        '<p class="project-desc' + (r.description ? '' : ' is-empty') + '">' + desc + '</p>' +
+        '<div class="project-meta">' +
+          (r.language ? '<span class="lang">' + esc(r.language) + '</span>' : '') +
+          '<span>Updated ' + esc(fmtDate(r.pushed_at)) + '</span>' +
+          (r.stargazers_count > 0 ? '<span class="stars">' + icon('i-star') + r.stargazers_count + '<span class="visually-hidden"> stars</span></span>' : '') +
+        '</div>' +
+        (code || live ? '<div class="project-links">' +
+          (code ? '<a href="' + esc(code) + '" target="_blank" rel="noopener">' + icon('i-code') + 'Code<span class="visually-hidden"> for ' + esc(prettyName(r.name)) + '</span></a>' : '') +
+          (live ? '<a href="' + esc(live) + '" target="_blank" rel="noopener">' + icon('i-external') + 'Live site<span class="visually-hidden"> for ' + esc(prettyName(r.name)) + '</span></a>' : '') +
+        '</div>' : '') + '</li>';
+    }).join('');
+  }
+
+  function renderFilters() {
+    const langs = Array.from(new Set(repos.map((r) => r.language || 'Other'))).sort();
+    if (langs.length < 2) { filterBar.hidden = true; return; }
+    filterBar.hidden = false;
+    filterBar.innerHTML = ['All'].concat(langs).map((l) =>
+      '<button type="button" class="filter" aria-pressed="' + (l === activeLang) + '" data-lang="' + esc(l) + '">' + esc(l) + '</button>').join('');
+  }
+
+  filterBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-lang]');
+    if (!btn) return;
+    activeLang = btn.dataset.lang;
+    filterBar.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    render();
+  });
+
+  function readCache() {
+    try {
+      const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+      return c && Date.now() - c.t < CACHE_MS ? c.data : null;
+    } catch { return null; }
+  }
+  function writeCache(data) {
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch { /* storage unavailable */ }
+  }
+
+  const retryBtn = '<button type="button" class="btn btn-secondary" data-projects-retry>Try again</button>';
+  const profileLink = '<a class="btn btn-secondary" href="' + PROFILE + '" target="_blank" rel="noopener">' + icon('i-external') + 'View GitHub profile</a>';
+
+  async function load() {
+    if (loading || repos) return;
+    const cached = readCache();
+    if (cached) { repos = cached; renderFilters(); render(); return; }
+
+    loading = true;
+    status.innerHTML = '';
+    grid.innerHTML = skeleton;
+    grid.setAttribute('aria-busy', 'true');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const res = await fetch(API, { headers: { Accept: 'application/vnd.github+json' }, signal: controller.signal });
+      if (res.status === 403 || res.status === 429) {
+        const reset = Number(res.headers.get('x-ratelimit-reset')) * 1000;
+        const when = reset ? ' after ' + new Date(reset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ' later';
+        showStatus('i-alert', 'GitHub is limiting requests right now. Please try again' + when + ', or browse the projects on GitHub.', profileLink);
+        return;
+      }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('Unexpected response');
+
+      repos = data
+        .filter((r) => !r.fork && !r.archived && !r.private)
+        .map((r) => ({ name: r.name, description: r.description, language: r.language, html_url: r.html_url,
+                       homepage: r.homepage, stargazers_count: r.stargazers_count, pushed_at: r.pushed_at }));
+      writeCache(repos);
+
+      if (!repos.length) {
+        showStatus('i-folder', 'No public projects yet. New work will appear here as soon as it is published on GitHub.', profileLink);
+        return;
+      }
+      renderFilters();
+      render();
+    } catch (err) {
+      repos = null;
+      const msg = err && err.name === 'AbortError' ? 'Loading projects took too long.' : 'Projects could not be loaded.';
+      showStatus('i-alert', msg + ' Check your connection and try again.', retryBtn + profileLink);
+    } finally {
+      clearTimeout(timer);
+      loading = false;
+    }
+  }
+
+  status.addEventListener('click', (e) => { if (e.target.closest('[data-projects-retry]')) load(); });
+
+  // Load when the Projects section becomes visible (tab click, deep link or Back button).
+  new MutationObserver(() => { if (!page.hidden) load(); }).observe(page, { attributes: true, attributeFilter: ['hidden'] });
+  if (!page.hidden) load();
+})();

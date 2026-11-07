@@ -8,14 +8,18 @@ Personal portfolio for Suraj Singh, Data Analyst & MIS Specialist based in Thane
 
 - **About** – summary, services and the tools I use
 - **Resume** – experience, education and skills
+- **Projects** – my public GitHub repositories, loaded live from the GitHub API (forks hidden, filter by language)
 - **Contact** – a contact form (sent by email through [FormSubmit](https://formsubmit.co)) and a map
 
-Each section has its own link: `/#about`, `/#resume`, `/#contact`.
+Each section has its own link: `/#about`, `/#resume`, `/#projects`, `/#contact`.
+
+To make a project look good on the Projects tab, give its GitHub repository a short description, and put
+the live URL in the repository's **Website** field so a "Live site" button appears.
 
 ## Tech
 
 Plain HTML, CSS and JavaScript with no build step and no frameworks. Icons are inline SVG, so the
-only outside requests are the Poppins font (Google Fonts), the Google Maps embed and the form endpoint.
+only outside requests are the Poppins font (Google Fonts), the Google Maps embed, the form endpoint and the GitHub API.
 The site follows the visitor's light or dark system setting.
 
 ```
