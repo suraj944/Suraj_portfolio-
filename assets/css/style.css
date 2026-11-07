@@ -507,17 +507,23 @@ a.contact-value:hover { color: var(--accent); }
 /* ---------- Featured project ---------- */
 .section-title--first { margin-top: 0; }
 
-.feature { padding: 0; overflow: hidden; margin-bottom: var(--s-2); }
+.feature { padding: 0; overflow: hidden; }
+.feature-list + .section-title { margin-top: var(--s-6); }
+
+.feature-list { display: grid; gap: var(--s-5); }
 
 .feature-media {
-  overflow-x: auto;
+  display: block;
   background: #ffffff;
   border-bottom: 1px solid var(--border);
-  scrollbar-width: thin;
 }
-.feature-media img { height: 200px; width: auto; max-width: none; }
+.feature-media img { width: 100%; height: auto; transition: opacity var(--ease); }
+a.feature-media:hover img { opacity: 0.92; }
 .feature-media:focus-visible { border-radius: 0; }
-@media (min-width: 1024px) { .feature-media img { height: 220px; } }
+
+.feature-media.is-wide { overflow-x: auto; scrollbar-width: thin; }
+.feature-media.is-wide img { height: 200px; width: auto; max-width: none; }
+@media (min-width: 1024px) { .feature-media.is-wide img { height: 220px; } }
 
 .feature-hint { padding: var(--s-2) var(--s-5) 0; font-size: var(--fs-xs); color: var(--text-3); }
 
