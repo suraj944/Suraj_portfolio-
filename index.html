@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./assets/css/style.css?v=3">
+  <link rel="stylesheet" href="./assets/css/style.css?v=4">
 </head>
 
 <body>
@@ -46,6 +46,8 @@
       <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/></symbol>
       <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z"/></symbol>
       <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"/></symbol>
+      <symbol id="i-table" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10"/></symbol>
       <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
     </defs>
   </svg>
@@ -274,7 +276,53 @@
             <h2 class="page-title" id="projects-title">Projects</h2>
           </header>
 
-          <p class="lead">My public work on GitHub. This list is loaded live from
+          <h3 class="section-title section-title--first">Featured</h3>
+
+          <article class="card feature" aria-labelledby="attn-title">
+            <div class="feature-media" role="region" aria-label="Preview of the attendance tracker sheet. Scroll sideways to see all columns." tabindex="0">
+              <img src="./assets/projects/attendance/preview.webp" width="3355" height="400" loading="lazy"
+                alt="Attendance tracker sheet for October 2026: month and year selectors, daily date and weekday headers from 1 to 31, six sample employees with P entries, and Total Days, Present and Absent totals.">
+            </div>
+            <p class="feature-hint" aria-hidden="true">Scroll sideways to see the whole sheet →</p>
+
+            <div class="feature-body">
+              <div class="project-head">
+                <span class="project-icon" aria-hidden="true"><svg class="icon"><use href="#i-table"/></svg></span>
+                <h4 class="project-title" id="attn-title">MIS Attendance Tracker</h4>
+              </div>
+
+              <p class="project-desc">
+                A monthly attendance workbook for MIS teams and team leads. Pick a month and year and the sheet
+                builds the calendar for you; mark each day P or A and every employee's totals update automatically.
+              </p>
+
+              <ul class="feature-points">
+                <li>Month and year selectors build the date and weekday headers for any month, 28 to 31 days</li>
+                <li>Present and Absent totals per employee calculated with <code>COUNTIF</code></li>
+                <li>Colour-coded entries (P, A, WO) so gaps stand out before reporting</li>
+                <li>Includes a 5-page user guide with steps, checks and common fixes</li>
+              </ul>
+
+              <ul class="chips" aria-label="Built with">
+                <li class="chip">Excel</li>
+                <li class="chip">Formulas</li>
+                <li class="chip">Conditional formatting</li>
+                <li class="chip">Data validation</li>
+              </ul>
+
+              <div class="project-links">
+                <a href="./assets/projects/attendance/MIS_Attendance_Report.xlsx" download>
+                  <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download workbook <span class="muted">(.xlsx, 9 KB)</span>
+                </a>
+                <a href="./assets/projects/attendance/MIS_Attendance_Report_User_Guide.pdf" target="_blank" rel="noopener">
+                  <svg class="icon" aria-hidden="true"><use href="#i-report"/></svg>User guide <span class="muted">(PDF, 353 KB)</span>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <h3 class="section-title">On GitHub</h3>
+          <p class="lead">Loaded live from
             <a href="https://github.com/suraj944" target="_blank" rel="noopener">github.com/suraj944</a>, so new repositories appear here automatically.</p>
 
           <div class="filters" role="group" aria-label="Filter projects by language" data-project-filters hidden></div>
@@ -346,7 +394,7 @@
     </div>
   </div>
 
-  <script src="./assets/js/script.js?v=3" defer></script>
+  <script src="./assets/js/script.js?v=4" defer></script>
 </body>
 
 </html>
