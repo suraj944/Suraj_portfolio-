@@ -50,5 +50,5 @@ surajsingh511921@gmail.com. Until then the form shows an error that explains thi
 
 ## Updating CSS or JavaScript
 
-`index.html` loads `style.css?v=2` and `script.js?v=2`. When you change either file, raise the number
-(`?v=3`, …) so returning visitors' browsers fetch the new file instead of a cached copy.
+`index.html` loads `style.css?v=3` and `script.js?v=3`. When you change either file, raise the number
+(`?v=4`, …) so returning visitors' browsers fetch the new file instead of a cached copy.

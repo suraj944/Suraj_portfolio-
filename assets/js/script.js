@@ -296,7 +296,7 @@
       if (!Array.isArray(data)) throw new Error('Unexpected response');
 
       repos = data
-        .filter((r) => !r.fork && !r.archived && !r.private)
+        .filter((r) => !r.fork && !r.archived && !r.private && r.name.toLowerCase() !== USER.toLowerCase()) // skip the profile README repo
         .map((r) => ({ name: r.name, description: r.description, language: r.language, html_url: r.html_url,
                        homepage: r.homepage, stargazers_count: r.stargazers_count, pushed_at: r.pushed_at }));
       writeCache(repos);
