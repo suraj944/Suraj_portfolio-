@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./assets/css/style.css?v=7">
+  <link rel="stylesheet" href="./assets/css/style.css?v=8">
 </head>
 
 <body>
@@ -294,6 +294,41 @@
 
           <div class="feature-list">
 
+          <article class="card feature" aria-labelledby="tasks-title">
+            <div class="feature-body">
+              <div class="project-head">
+                <span class="project-icon" aria-hidden="true"><svg class="icon"><use href="#i-auto"/></svg></span>
+                <h4 class="project-title" id="tasks-title">Recurring Task Automation System</h4>
+              </div>
+
+              <p class="project-desc">
+                A working proof of concept for Allo Innoware that tracks recurring team tasks, collects completions
+                from employees and escalates anything that slips, built entirely in Google Sheets with Apps Script.
+              </p>
+
+              <ul class="feature-points">
+                <li>Recurring tasks on daily to 30-day cycles; the next due date recalculates automatically the moment a task is completed</li>
+                <li>Employees update a single cell: a ticket ID for portal tasks, or <code>DONE</code> for daily tasks, validated by the script so a ticket task can't be closed with DONE</li>
+                <li>Live manager dashboard of every overdue and due-today task, with an acknowledgement checkbox per task</li>
+                <li>Daily automated emails: a same-day alert to the manager, then escalation to leadership after 24 hours without acknowledgement or 72 hours unresolved, each sent only once</li>
+                <li>All timings set in an SLA settings tab, every event written to an audit log, and sheet protection so employees can only edit their own input cells</li>
+              </ul>
+
+              <ul class="chips">
+                <li class="chip">Google Sheets</li>
+                <li class="chip">Apps Script</li>
+                <li class="chip">QUERY</li>
+                <li class="chip">Email automation</li>
+              </ul>
+
+              <div class="project-links">
+                <a href="https://docs.google.com/spreadsheets/d/17BFN8pJVk5_DCmDaLReqRPeHNGCqUe9eaZAt9MIA4Ck/edit?usp=sharing" target="_blank" rel="noopener">
+                  <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg>Open in Google Sheets
+                </a>
+              </div>
+            </div>
+          </article>
+
           <article class="card feature" aria-labelledby="sales-title">
 
             <div class="feature-body">
@@ -480,7 +515,7 @@
     </div>
   </div>
 
-  <script src="./assets/js/script.js?v=7" defer></script>
+  <script src="./assets/js/script.js?v=8" defer></script>
 </body>
 
 </html>
