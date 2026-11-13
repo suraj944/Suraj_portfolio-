@@ -49,6 +49,7 @@
       <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"/></symbol>
       <symbol id="i-table" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10"/></symbol>
       <symbol id="i-pie" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12Z"/><path d="M15 3.8A8.5 8.5 0 0 1 20.2 9H15Z"/></symbol>
+      <symbol id="i-pen" viewBox="0 0 24 24"><path d="m14.5 5.5 4 4L8 20H4v-4Z"/><path d="m12.5 7.5 4 4M3.5 20.5h17"/></symbol>
       <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
     </defs>
   </svg>
@@ -293,6 +294,41 @@
           <h3 class="section-title section-title--first">Featured</h3>
 
           <div class="feature-list">
+
+          <article class="card feature" aria-labelledby="screendraw-title">
+            <div class="feature-body">
+              <div class="project-head">
+                <span class="project-icon" aria-hidden="true"><svg class="icon"><use href="#i-pen"/></svg></span>
+                <h4 class="project-title" id="screendraw-title">ScreenDraw: Draw on Screen &amp; Screenshot Tool</h4>
+              </div>
+
+              <p class="project-desc">
+                A small Windows app that lets you draw anywhere on the screen, on top of any app, video or slide,
+                and save a screenshot with your drawings in one click. No installation needed.
+              </p>
+
+              <ul class="feature-points">
+                <li>Pen, highlighter, line, arrow, box, circle, text and eraser tools, with 8 colours, 8 pen sizes and undo/redo</li>
+                <li>Full-screen screenshot or snip an area; images are saved to <code>Pictures\ScreenDraw</code> and copied to the clipboard</li>
+                <li>Drawing on/off mode, so you can keep using the PC while your drawings stay on screen</li>
+                <li>Floating toolbar, a full menu (right-click or tray icon) and global shortcuts such as <code>Ctrl+Alt+S</code></li>
+                <li>Works on multiple monitors and high-DPI screens; runs on Windows 10 and 11</li>
+              </ul>
+
+              <ul class="chips">
+                <li class="chip">C#</li>
+                <li class="chip">WinForms</li>
+                <li class="chip">Win32 API</li>
+                <li class="chip">Windows</li>
+              </ul>
+
+              <div class="project-links">
+                <a href="./assets/projects/screendraw/ScreenDraw.zip" download>
+                  <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for Windows <span class="muted">(.zip, 69 KB)</span>
+                </a>
+              </div>
+            </div>
+          </article>
 
           <article class="card feature" aria-labelledby="tasks-title">
             <div class="feature-body">
