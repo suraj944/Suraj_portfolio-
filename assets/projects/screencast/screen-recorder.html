@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScreenCast Pro — Full HD Screen Recorder</title>
+<style>
+:root{
+  --bg:#0a0c11;--panel:#11141b;--panel2:#171b24;--line:#232937;--line2:#2e3546;
+  --text:#e8ebf2;--muted:#8b94a8;--dim:#5f687c;
+  --accent:#ff3b4e;--accent-h:#ff5466;--ok:#2fd27a;--warn:#f5b041;--err:#ff5466;--blue:#5b8cff;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* Header */
+.top{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0f1219,#0a0c11);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.logo{width:28px;height:28px;border-radius:8px;background:radial-gradient(circle at 50% 50%,#fff 0 22%,var(--accent) 24% 100%);box-shadow:0 0 0 3px rgba(255,59,78,.18)}
+.brand small{font-weight:600;color:var(--muted);font-size:12px;margin-left:2px}
+.checks{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.chip.ok i{background:var(--ok)} .chip.bad i{background:var(--err)} .chip.warn i{background:var(--warn)}
+.icon-btn{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:6px 10px;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{color:var(--text);border-color:var(--line2)}
+
+.banner{display:none;margin:16px 22px 0;padding:12px 14px;border-radius:10px;background:rgba(255,84,102,.1);border:1px solid rgba(255,84,102,.35);color:#ffc2c9}
+.banner.show{display:block}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:20px;padding:20px 22px 40px;max-width:1560px;margin:0 auto}
+@media (max-width:1050px){.layout{grid-template-columns:1fr}}
+
+/* Viewer */
+.viewer{position:relative;aspect-ratio:16/9;background:#05060a;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.viewer::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(91,140,255,.08),transparent 60%);pointer-events:none}
+.viewer video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;background:#000}
+.viewer.live video,.viewer.playback video{display:block}
+.placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+.viewer.live .placeholder,.viewer.playback .placeholder{display:none}
+.ph-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:18px;border:1.5px solid var(--line2);display:grid;place-items:center;color:var(--muted)}
+.ph-title{font-size:18px;font-weight:650;margin-bottom:4px}
+.ph-sub{color:var(--muted);font-size:13px}
+.summary{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.summary span{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:3px 8px;font-size:12px;color:#c6ccd9;font-variant-numeric:tabular-nums}
+
+.hud{position:absolute;top:12px;left:12px;right:12px;display:none;gap:8px;align-items:center;z-index:3}
+.viewer.live .hud{display:flex}
+.pill{background:rgba(5,6,10,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);padding:4px 10px;border-radius:999px;font-size:12px;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:7px}
+.pill.rec{font-weight:700}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(255,59,78,.7);animation:pulse 1.4s infinite}
+.paused .dot{background:var(--warn);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,78,.6)}70%{box-shadow:0 0 0 8px rgba(255,59,78,0)}100%{box-shadow:0 0 0 0 rgba(255,59,78,0)}}
+.hud .spacer{flex:1}
+
+.countdown{position:absolute;inset:0;display:none;place-items:center;background:rgba(5,6,10,.7);z-index:5;text-align:center}
+.countdown.show{display:grid}
+.countdown b{display:block;font-size:min(22vw,170px);font-weight:800;line-height:1;letter-spacing:-.04em;animation:pop .9s ease-out}
+.countdown small{color:var(--muted)}
+@keyframes pop{0%{transform:scale(1.35);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
+
+/* Meters */
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.meter{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:11.5px;color:var(--muted)}
+.meter .lbl{width:52px;font-weight:600;letter-spacing:.06em}
+.bar{flex:1;height:8px;border-radius:5px;background:var(--panel2);overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--ok) 0 65%,var(--warn) 65% 85%,var(--err) 85%);transition:width 60ms linear}
+.meter .st{width:58px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* Controls */
+.controls{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--panel2);border-radius:11px;padding:10px 16px;cursor:pointer;font-weight:600;transition:background .15s,border-color .15s,opacity .15s}
+.btn:hover:not(:disabled){background:#1f2430;border-color:#3a4256}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn svg{width:16px;height:16px}
+.btn-rec{background:var(--accent);border-color:var(--accent);color:#fff;padding:12px 24px;border-radius:999px;font-size:15px}
+.btn-rec:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn-rec.stop{background:#fff;color:#111;border-color:#fff}
+.btn-rec.stop:hover:not(:disabled){background:#e9e9ee;border-color:#e9e9ee}
+.btn.on{border-color:var(--warn);color:var(--warn)}
+.controls .grow{flex:1}
+.kbd-hint{color:var(--dim);font-size:12px}
+kbd{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:#c6ccd9}
+
+/* Recordings */
+.section-h{display:flex;align-items:baseline;gap:10px;margin:26px 0 10px}
+.section-h h3{margin:0;font-size:15px}
+.section-h span{color:var(--muted);font-size:12.5px}
+.recs{display:flex;flex-direction:column;gap:10px}
+.empty{border:1px dashed var(--line2);border-radius:var(--r);padding:22px;text-align:center;color:var(--muted)}
+.rec-item{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px}
+.rec-item.active{border-color:var(--blue)}
+.thumb{width:150px;aspect-ratio:16/9;background:#000;border-radius:9px;overflow:hidden;position:relative;cursor:pointer}
+.thumb video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.thumb .dur{position:absolute;right:5px;bottom:5px;background:rgba(0,0,0,.75);font-size:11px;padding:1px 5px;border-radius:4px;font-variant-numeric:tabular-nums}
+.rec-name{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-name input{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:7px;padding:4px 8px}
+.rec-name input.bad{border-color:var(--err)}
+.rec-meta{color:var(--muted);font-size:12px;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.rec-meta .saved{color:var(--ok)}
+.rec-err{color:var(--err);font-size:12px;margin-top:3px}
+.rec-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
+.sm.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.sm.primary:hover:not(:disabled){background:#6f9aff;border-color:#6f9aff}
+.sm.danger:hover:not(:disabled){border-color:var(--err);color:var(--err)}
+.sm.confirm{border-color:var(--err);background:rgba(255,84,102,.12);color:var(--err)}
+@media (max-width:640px){.rec-item{grid-template-columns:1fr}.thumb{width:100%}.rec-actions{justify-content:flex-start}}
+
+/* Settings */
+.settings{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 14px 4px}
+.card h4{margin:0 0 12px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:flex;align-items:center;gap:8px}
+.card h4 .tag{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500;color:var(--dim)}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.locked .field:not(.live),.locked .tog:not(.live),.locked .btn-line{opacity:.5}
+.field{margin-bottom:12px}
+.field>label,.field>.lbl{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select,input[type=text],input[type=number]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;outline:none;transition:border-color .15s}
+select:hover,input[type=text]:hover,input[type=number]:hover{border-color:var(--line2)}
+select:focus,input:focus{border-color:var(--blue)}
+select option:disabled{color:#666}
+.field.invalid input,.field.invalid select{border-color:var(--err)}
+.err{display:none;color:var(--err);font-size:12px;margin-top:5px}
+.field.invalid .err{display:block}
+.hint{font-size:12px;color:var(--dim);margin-top:5px}
+.hint.warn{color:var(--warn)}
+.seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg label{flex:1;position:relative;margin:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;text-align:center;padding:6px 4px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.seg input:checked+span{background:#283042;color:var(--text);box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
+.seg input:focus-visible+span{outline:2px solid var(--blue)}
+.seg input:disabled+span{opacity:.4;cursor:not-allowed}
+.tog{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px;font-size:13px}
+.tog input{position:absolute;opacity:0;pointer-events:none}
+.tog i{width:34px;height:20px;border-radius:999px;background:#2a3040;position:relative;flex:none;transition:background .15s}
+.tog i::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#cfd5e2;transition:transform .15s}
+.tog input:checked+i{background:var(--blue)}
+.tog input:checked+i::after{transform:translateX(14px);background:#fff}
+.tog input:focus-visible+i{outline:2px solid var(--blue);outline-offset:2px}
+.tog small{display:block;color:var(--dim);font-size:11.5px}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-row output{width:44px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.cam-prev{position:relative;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;margin-bottom:12px;border:1px solid var(--line)}
+.cam-prev video{width:100%;height:100%;object-fit:cover}
+.cam-prev video.mirror{transform:scaleX(-1)}
+.cam-prev .ov{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:12.5px;text-align:center;padding:10px}
+.cam-prev.on .ov{display:none}
+.btn-line{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.hidden,[hidden]{display:none!important}
+.est{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);background:var(--panel2);border-radius:8px;padding:7px 10px;margin-bottom:12px;font-variant-numeric:tabular-nums}
+.est b{color:var(--text);font-weight:600}
+
+/* Toasts */
+.toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:100;max-width:min(400px,calc(100vw - 36px))}
+.toast{background:#161a23;border:1px solid var(--line2);border-left:3px solid var(--blue);border-radius:10px;padding:10px 12px 10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45);animation:tin .2s ease-out;display:flex;gap:10px}
+.toast.ok{border-left-color:var(--ok)} .toast.warn{border-left-color:var(--warn)} .toast.err{border-left-color:var(--err)}
+.toast .tb{flex:1;min-width:0}
+.toast b{display:block;font-size:13px;margin-bottom:2px}
+.toast p{margin:0;color:var(--muted);font-size:12.5px}
+.toast .ta{display:flex;gap:6px;margin-top:8px}
+.toast .x{background:none;border:0;color:var(--dim);cursor:pointer;font-size:16px;line-height:1;padding:0 2px;align-self:flex-start}
+@keyframes tin{from{transform:translateY(8px);opacity:0}}
+
+/* Dialog */
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line2);border-radius:16px;max-width:560px;width:calc(100vw - 40px);padding:22px 24px}
+dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(2px)}
+dialog h2{margin:0 0 12px;font-size:18px}
+dialog h3{font-size:13px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+dialog table{width:100%;border-collapse:collapse;font-size:13px}
+dialog td{padding:6px 0;border-bottom:1px solid var(--line)}
+dialog td:last-child{text-align:right}
+dialog ul{margin:0;padding-left:18px;color:#c6ccd9;font-size:13px}
+dialog li{margin-bottom:6px}
+.foot{color:var(--dim);font-size:12px;margin-top:22px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><div class="logo" aria-hidden="true"></div>ScreenCast Pro <small>v1.0 · by Suraj Singh</small></div>
+  <div class="checks" id="checks" aria-label="Browser capability checks"></div>
+  <button class="icon-btn" id="helpBtn" title="Shortcuts & tips">? Help</button>
+</header>
+<div class="banner" id="banner" role="alert"></div>
+
+<main class="layout">
+  <section>
+    <div class="viewer" id="viewer">
+      <video id="preview" playsinline muted></video>
+      <div class="placeholder">
+        <div>
+          <div class="ph-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10.5" r="2.6" fill="currentColor" stroke="none" style="color:var(--accent)"/></svg></div>
+          <div class="ph-title" id="phTitle">Ready to record</div>
+          <div class="ph-sub" id="phSub">Pick your settings, then press Start. You'll choose a screen, window or tab next.</div>
+          <div class="summary" id="summary"></div>
+        </div>
+      </div>
+      <div class="hud" id="hud">
+        <span class="pill rec" id="recPill"><span class="dot"></span><span id="recLabel">REC</span> <span id="timer">00:00:00</span></span>
+        <span class="pill" id="sizePill">0 B</span>
+        <span class="pill" id="resPill">—</span>
+        <span class="spacer"></span>
+        <span class="pill" id="limitPill" hidden></span>
+      </div>
+      <div class="countdown" id="countdown" aria-live="assertive"><div><b id="cdNum">3</b><small>Recording starts soon · press <kbd>Esc</kbd> to cancel</small></div></div>
+    </div>
+
+    <div class="meters">
+      <div class="meter"><span class="lbl">MIC</span><div class="bar"><i id="micBar"></i></div><span class="st" id="micSt">off</span></div>
+      <div class="meter"><span class="lbl">SYSTEM</span><div class="bar"><i id="sysBar"></i></div><span class="st" id="sysSt">off</span></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-rec" id="startBtn"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg><span>Start recording</span></button>
+      <button class="btn" id="pauseBtn" disabled><svg viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="2.5" width="3.4" height="11" rx="1"/><rect x="9.6" y="2.5" width="3.4" height="11" rx="1"/></svg><span>Pause</span></button>
+      <button class="btn" id="muteBtn" disabled title="Mute / unmute microphone (Alt+Shift+M)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5"/><path d="M3 8a5 5 0 0 0 10 0M8 13v2"/></svg><span>Mute mic</span></button>
+      <button class="btn" id="camToggleBtn" disabled title="Show / hide camera overlay (Alt+Shift+C)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="4" width="9" height="8" rx="1.5"/><path d="m10.5 7 4-2.2v6.4l-4-2.2"/></svg><span>Hide camera</span></button>
+      <button class="btn" id="floatBtn" disabled title="Float camera bubble over your screen"><span>Float camera</span></button>
+      <span class="grow"></span>
+      <span class="kbd-hint"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> start/stop · <kbd>P</kbd> pause</span>
+    </div>
+
+    <div class="section-h"><h3>Recordings</h3><span id="recsInfo">Kept in this tab until you download them — nothing is uploaded.</span></div>
+    <div class="recs" id="recs"><div class="empty">No recordings yet.</div></div>
+  </section>
+
+  <aside class="settings" aria-label="Recording settings">
+    <form id="settings" novalidate autocomplete="off">
+    <fieldset id="fs">
+      <div class="card">
+        <h4>Source</h4>
+        <div class="field">
+          <div class="seg" role="radiogroup" aria-label="Capture mode">
+            <label><input type="radio" name="mode" value="screen" checked><span>Screen</span></label>
+            <label><input type="radio" name="mode" value="screen-cam"><span>Screen + Cam</span></label>
+            <label><input type="radio" name="mode" value="cam"><span>Camera</span></label>
+          </div>
+          <div class="err" id="modeErr"></div>
+        </div>
+        <div class="field">
+          <label for="optimize">Optimize for</label>
+          <select id="optimize">
+            <option value="detail">Text &amp; detail (slides, code, docs)</option>
+            <option value="motion">Motion (video, games, animation)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Video</h4>
+        <div class="row2">
+          <div class="field">
+            <label for="res">Resolution</label>
+            <select id="res">
+              <option value="720">720p HD</option>
+              <option value="1080" selected>1080p Full HD</option>
+              <option value="1440">1440p QHD</option>
+              <option value="2160">2160p 4K UHD</option>
+              <option value="native">Native size</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fps">Frame rate</label>
+            <select id="fps">
+              <option value="24">24 fps</option>
+              <option value="30" selected>30 fps</option>
+              <option value="60">60 fps</option>
+            </select>
+          </div>
+        </div>
+        <div class="hint warn hidden" id="resHint" style="margin:-6px 0 12px"></div>
+        <div class="field">
+          <label for="quality">Quality</label>
+          <select id="quality">
+            <option value="standard">Standard — smaller files</option>
+            <option value="high" selected>High — recommended</option>
+            <option value="ultra">Ultra — near lossless</option>
+            <option value="custom">Custom bitrate…</option>
+          </select>
+        </div>
+        <div class="field hidden" id="customBitrateField">
+          <label for="customBitrate">Video bitrate (Mbps)</label>
+          <input type="number" id="customBitrate" min="1" max="100" step="0.5" value="12" inputmode="decimal">
+          <div class="err"></div>
+        </div>
+        <div class="field">
+          <label for="format">Format</label>
+          <select id="format"></select>
+          <div class="err"></div>
+          <div class="hint" id="formatHint"></div>
+        </div>
+        <div class="est"><span>Video bitrate <b id="estBitrate">—</b></span><span>≈ <b id="estSize">—</b> / min</span></div>
+      </div>
+
+      <div class="card">
+        <h4>Audio</h4>
+        <label class="tog" id="sysAudioRow"><input type="checkbox" id="sysAudio" checked><i></i><span>System / tab audio<small>Tick “Share audio” in the browser picker</small></span></label>
+        <label class="tog"><input type="checkbox" id="mic" checked><i></i><span>Microphone</span></label>
+        <div id="micOpts">
+          <div class="field">
+            <label for="micDevice">Microphone device</label>
+            <select id="micDevice"><option value="">Default microphone</option></select>
+            <div class="err"></div>
+          </div>
+          <div class="field live">
+            <label for="micGain">Mic volume</label>
+            <div class="range-row"><input type="range" id="micGain" min="0" max="200" step="5" value="100"><output id="micGainOut">100%</output></div>
+          </div>
+          <label class="tog"><input type="checkbox" id="noiseSup" checked><i></i><span>Noise suppression &amp; echo cancel</span></label>
+          <div class="btn-line"><button type="button" class="btn sm" id="micTestBtn">Test microphone</button></div>
+        </div>
+        <div class="field">
+          <label for="audioBitrate">Audio quality</label>
+          <select id="audioBitrate">
+            <option value="128000">128 kbps</option>
+            <option value="192000" selected>192 kbps</option>
+            <option value="256000">256 kbps</option>
+            <option value="320000">320 kbps</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card" id="camCard">
+        <h4>Camera <span class="tag" id="camTag"></span></h4>
+        <div class="cam-prev" id="camPrev"><video id="camVideo" playsinline muted autoplay></video><div class="ov" id="camOv">Camera preview is off</div></div>
+        <div class="btn-line"><button type="button" class="btn sm" id="camPrevBtn">Turn on preview</button></div>
+        <div class="field">
+          <label for="camDevice">Camera device</label>
+          <select id="camDevice"><option value="">Default camera</option></select>
+          <div class="err"></div>
+        </div>
+        <div class="field" id="camStyleField">
+          <div class="lbl">Overlay style</div>
+          <div class="seg">
+            <label><input type="radio" name="camStyle" value="embed" checked><span>Embed in video</span></label>
+            <label><input type="radio" name="camStyle" value="pip"><span>Floating bubble</span></label>
+          </div>
+          <div class="hint" id="camStyleHint"></div>
+        </div>
+        <div id="embedOpts">
+          <div class="field live">
+            <div class="lbl">Position</div>
+            <div class="seg">
+              <label><input type="radio" name="camPos" value="tl"><span>↖</span></label>
+              <label><input type="radio" name="camPos" value="tr"><span>↗</span></label>
+              <label><input type="radio" name="camPos" value="bl"><span>↙</span></label>
+              <label><input type="radio" name="camPos" value="br" checked><span>↘</span></label>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field live">
+              <label for="camSize">Size</label>
+              <select id="camSize"><option value="0.14">Small</option><option value="0.2" selected>Medium</option><option value="0.28">Large</option></select>
+            </div>
+            <div class="field live">
+              <label for="camShape">Shape</label>
+              <select id="camShape"><option value="circle" selected>Circle</option><option value="rounded">Rounded</option></select>
+            </div>
+          </div>
+        </div>
+        <label class="tog live"><input type="checkbox" id="camMirror" checked><i></i><span>Mirror camera</span></label>
+      </div>
+
+      <div class="card">
+        <h4>Recording</h4>
+        <div class="row2">
+          <div class="field">
+            <label for="countdownSel">Countdown</label>
+            <select id="countdownSel"><option value="0">Off</option><option value="3" selected>3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option></select>
+          </div>
+          <div class="field">
+            <label for="maxMin">Auto-stop (min)</label>
+            <input type="number" id="maxMin" min="0" max="720" step="1" value="0" inputmode="numeric">
+            <div class="err"></div>
+          </div>
+        </div>
+        <div class="hint" style="margin:-6px 0 12px">Auto-stop: 0 = no limit (max 720).</div>
+        <div class="field">
+          <label for="filename">File name</label>
+          <input type="text" id="filename" value="Recording {date} {time}" maxlength="140" spellcheck="false">
+          <div class="err"></div>
+          <div class="hint">Tokens: <code>{date}</code> <code>{time}</code> <code>{res}</code> <code>{fps}</code> → <span id="fnPreview"></span></div>
+        </div>
+        <label class="tog"><input type="checkbox" id="autoDownload"><i></i><span>Auto-download when stopped</span></label>
+      </div>
+    </fieldset>
+    </form>
+  </aside>
+</main>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<dialog id="help">
+  <h2>Shortcuts &amp; tips</h2>
+  <table>
+    <tr><td>Start / stop recording</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td></tr>
+    <tr><td>Pause / resume</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td></tr>
+    <tr><td>Mute / unmute mic</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td></tr>
+    <tr><td>Show / hide camera overlay</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td></tr>
+    <tr><td>Cancel countdown</td><td><kbd>Esc</kbd></td></tr>
+  </table>
+  <h3>Tips</h3>
+  <ul>
+    <li>Shortcuts work while this tab is focused (browsers don't allow global hotkeys for web pages). You can always stop from the browser's “Stop sharing” bar.</li>
+    <li><b>Full HD needs a Full HD source.</b> Recordings can't exceed the size of the screen or window you share — a 1366×768 laptop screen records at 1366×768.</li>
+    <li><b>System audio:</b> tick “Share audio” in the picker. Tab audio works in Chrome/Edge everywhere; whole-screen audio depends on your OS and browser version.</li>
+    <li><b>Camera “Embed in video”</b> draws your webcam into the recording itself (Chrome/Edge). <b>“Floating bubble”</b> pops the camera into an always-on-top window, which only shows up when you record the entire screen.</li>
+    <li><b>macOS:</b> allow your browser under System Settings → Privacy &amp; Security → Screen Recording, then restart the browser.</li>
+    <li>MP4 (H.264) plays everywhere. WebM files get proper duration metadata automatically so they're seekable.</li>
+    <li>Long recordings are held in memory — download them as soon as you're done.</li>
+  </ul>
+  <div style="text-align:right;margin-top:18px"><button class="btn" id="helpClose">Close</button></div>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const radio = name => ($(`input[name="${name}"]:checked`) || {}).value;
+const setRadio = (name, v) => { const el = $(`input[name="${name}"][value="${CSS.escape(String(v))}"]`); if (el) el.checked = true; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+function fmtTime(ms) { const t = Math.max(0, Math.floor(ms / 1000)); return `${pad(Math.floor(t / 3600))}:${pad(Math.floor(t / 60) % 60)}:${pad(t % 60)}`; }
+function fmtBytes(b) { if (!b) return '0 B'; const u = ['B','KB','MB','GB']; const i = Math.min(u.length - 1, Math.floor(Math.log(b) / Math.log(1024))); return `${(b / 1024 ** i).toFixed(i >= 2 ? 1 : 0)} ${u[i]}`; }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- constants ---------- */
+const RES = { '720': [1280, 720], '1080': [1920, 1080], '1440': [2560, 1440], '2160': [3840, 2160] };
+const QUALITY_BASE = { standard: 6, high: 10, ultra: 18 }; // Mbps at 1080p30
+const FORMATS = [
+  { id: 'mp4-h264', label: 'MP4 · H.264 + AAC (plays everywhere)' },
+  { id: 'webm-vp9', label: 'WebM · VP9 + Opus (sharpest text)' },
+  { id: 'webm-av1', label: 'WebM · AV1 + Opus (smallest files)' },
+  { id: 'webm-h264', label: 'MKV/WebM · H.264 + Opus' },
+  { id: 'webm-vp8', label: 'WebM · VP8 + Opus (most compatible)' },
+  { id: 'auto', label: 'Browser default' },
+];
+function avcLevel(w, h, fps) {
+  const px = w * h * fps;
+  if (px <= 1920 * 1088 * 30) return '640028';
+  if (px <= 1920 * 1088 * 60) return '64002a';
+  if (px <= 4096 * 2304 * 30) return '640033';
+  return '640034';
+}
+function mimeCandidates(fmt, hasAudio, w = 1920, h = 1080, fps = 30) {
+  const a = (v, aud) => hasAudio ? `${v},${aud}` : v;
+  const lvl = avcLevel(w, h, fps);
+  switch (fmt) {
+    case 'mp4-h264': return [a(`video/mp4;codecs=avc1.${lvl}`, 'mp4a.40.2'), a('video/mp4;codecs=avc1', 'mp4a.40.2'), a(`video/mp4;codecs=avc1.${lvl}`, 'opus'), 'video/mp4'];
+    case 'webm-vp9': return [a('video/webm;codecs=vp9', 'opus'), a('video/webm;codecs=vp09.00.41.08', 'opus')];
+    case 'webm-av1': return [a('video/webm;codecs=av01', 'opus'), a('video/webm;codecs=av1', 'opus')];
+    case 'webm-h264': return [a('video/webm;codecs=h264', 'opus'), a('video/x-matroska;codecs=avc1', 'opus')];
+    case 'webm-vp8': return [a('video/webm;codecs=vp8', 'opus')];
+    default: return [''];
+  }
+}
+const canRecord = 'MediaRecorder' in window;
+const isSupported = m => { try { return m === '' || (canRecord && MediaRecorder.isTypeSupported(m)); } catch { return false; } };
+const pickMime = (fmt, hasAudio, w, h, fps) => mimeCandidates(fmt, hasAudio, w, h, fps).find(isSupported);
+function extFor(mime) {
+  if (/^video\/mp4/.test(mime)) return 'mp4';
+  if (/matroska/.test(mime)) return 'mkv';
+  return 'webm';
+}
+
+/* ---------- capability checks ---------- */
+const CAP = {
+  secure: window.isSecureContext,
+  display: !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia),
+  userMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+  recorder: canRecord,
+  composite: 'MediaStreamTrackProcessor' in window && 'MediaStreamTrackGenerator' in window && 'OffscreenCanvas' in window && 'VideoFrame' in window,
+  docPip: 'documentPictureInPicture' in window,
+  pip: !!document.pictureInPictureEnabled,
+  savePicker: 'showSaveFilePicker' in window,
+};
+CAP.mp4 = canRecord && mimeCandidates('mp4-h264', true).some(isSupported);
+CAP.anyFormat = canRecord && FORMATS.some(f => f.id !== 'auto' && mimeCandidates(f.id, true).some(isSupported));
+
+function renderChecks() {
+  const items = [
+    ['Secure context', CAP.secure ? 'ok' : 'bad', CAP.secure ? 'Page can access capture APIs' : 'Open via file:// or https:// — capture APIs are blocked here'],
+    ['Screen capture', CAP.display ? 'ok' : 'bad', CAP.display ? 'getDisplayMedia available' : 'Not supported in this browser (mobile browsers can’t capture the screen)'],
+    ['Recorder', CAP.recorder ? 'ok' : 'bad', CAP.recorder ? 'MediaRecorder available' : 'MediaRecorder not supported'],
+    ['MP4', CAP.mp4 ? 'ok' : 'warn', CAP.mp4 ? 'Native MP4 (H.264) recording supported' : 'MP4 not supported here — WebM will be used'],
+    ['Cam embed', CAP.composite ? 'ok' : 'warn', CAP.composite ? 'Camera can be drawn into the video' : 'Embedding needs Chrome/Edge — floating bubble available instead'],
+  ];
+  $('#checks').innerHTML = items.map(([l, s, t]) => `<span class="chip ${s}" title="${esc(t)}"><i></i>${esc(l)}</span>`).join('');
+  const fatal = [];
+  if (!CAP.secure) fatal.push('This page isn’t running in a secure context, so the browser blocks screen, camera and microphone access. Open the HTML file directly (double-click it) or serve it over https:// or http://localhost.');
+  if (!CAP.recorder) fatal.push('This browser can’t record media (MediaRecorder is missing). Use a current version of Chrome, Edge, Firefox or Safari.');
+  else if (!CAP.anyFormat) fatal.push('This browser doesn’t support any of the recording formats this app uses.');
+  if (CAP.recorder && !CAP.display) fatal.push('Screen capture isn’t available in this browser (common on phones and tablets). Camera-only recording still works.');
+  if (fatal.length) { const b = $('#banner'); b.innerHTML = fatal.map(esc).join('<br>'); b.classList.add('show'); }
+}
+
+/* ---------- toasts ---------- */
+function toast(type, title, msg = '', { timeout = type === 'err' ? 9000 : 5500, actions = [] } = {}) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.setAttribute('role', type === 'err' ? 'alert' : 'status');
+  el.innerHTML = `<div class="tb"><b>${esc(title)}</b>${msg ? `<p>${esc(msg)}</p>` : ''}${actions.length ? '<div class="ta"></div>' : ''}</div><button class="x" aria-label="Dismiss">×</button>`;
+  actions.forEach(([label, fn]) => { const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = label; b.onclick = () => { fn(); el.remove(); }; $('.ta', el).append(b); });
+  $('.x', el).onclick = () => el.remove();
+  $('#toasts').append(el);
+  while ($('#toasts').children.length > 4) $('#toasts').firstChild.remove();
+  if (timeout) setTimeout(() => el.remove(), timeout);
+  return el;
+}
+
+function mediaError(err, what) {
+  const n = err && err.name;
+  if (what === 'screen') {
+    if (n === 'NotAllowedError') return /permission|system/i.test(err.message || '') ? 'Your OS blocked screen capture. On macOS, allow the browser in System Settings → Privacy & Security → Screen Recording, then restart it.' : 'Screen sharing was cancelled.';
+    if (n === 'NotReadableError' || n === 'AbortError') return 'The screen couldn’t be captured. Close other recording apps, check OS screen-recording permission, and try again.';
+    if (n === 'NotFoundError') return 'No screen or window was available to capture.';
+    if (n === 'OverconstrainedError') return 'This screen can’t provide the requested resolution/frame rate. Try a lower setting.';
+    if (n === 'InvalidStateError') return 'Screen capture must be started from a click on this page.';
+  } else {
+    const W = what[0].toUpperCase() + what.slice(1);
+    if (n === 'NotAllowedError' || n === 'SecurityError') return `${W} access was denied. Click the camera/mic icon in the address bar to allow it, then try again.`;
+    if (n === 'NotFoundError') return `No ${what} was found. Check it’s plugged in and enabled.`;
+    if (n === 'NotReadableError' || n === 'AbortError') return `The ${what} is busy or blocked — close other apps that use it (Zoom, Teams, OBS…) and retry.`;
+    if (n === 'OverconstrainedError') return `The selected ${what} doesn’t support these settings. Pick another device or lower the resolution.`;
+  }
+  return (err && err.message) || 'Unknown error.';
+}
+
+/* ---------- settings ---------- */
+const STORE_KEY = 'screencast-pro-settings-v1';
+function readSettings() {
+  return {
+    mode: radio('mode'), optimize: $('#optimize').value,
+    res: $('#res').value, fps: +$('#fps').value, quality: $('#quality').value, customBitrate: $('#customBitrate').value, format: $('#format').value,
+    sysAudio: $('#sysAudio').checked, mic: $('#mic').checked, micDevice: $('#micDevice').value, micGain: +$('#micGain').value, noiseSup: $('#noiseSup').checked, audioBitrate: +$('#audioBitrate').value,
+    camDevice: $('#camDevice').value, camStyle: radio('camStyle'), camPos: radio('camPos'), camSize: +$('#camSize').value, camShape: $('#camShape').value, camMirror: $('#camMirror').checked,
+    countdown: +$('#countdownSel').value, maxMin: $('#maxMin').value, filename: $('#filename').value, autoDownload: $('#autoDownload').checked,
+  };
+}
+let savedPrefs = {};
+function saveSettings() { try { localStorage.setItem(STORE_KEY, JSON.stringify(readSettings())); } catch {} }
+function loadSettings() {
+  try { savedPrefs = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch { savedPrefs = {}; }
+  const p = savedPrefs, setV = (id, v) => { const el = $('#' + id); if (v == null || !el) return; if ([...(el.options || [])].length && ![...el.options].some(o => o.value === String(v))) return; el.value = v; };
+  if (p.mode) setRadio('mode', p.mode);
+  ['optimize', 'res', 'fps', 'quality', 'customBitrate', 'audioBitrate', 'camSize', 'camShape', 'maxMin', 'filename'].forEach(k => setV(k, p[k]));
+  setV('countdownSel', p.countdown);
+  setV('micGain', p.micGain);
+  if (p.camStyle) setRadio('camStyle', p.camStyle);
+  if (p.camPos) setRadio('camPos', p.camPos);
+  ['sysAudio', 'mic', 'noiseSup', 'camMirror', 'autoDownload'].forEach(k => { if (typeof p[k] === 'boolean') $('#' + k).checked = p[k]; });
+}
+
+function buildFormatSelect() {
+  const sel = $('#format');
+  sel.innerHTML = FORMATS.map(f => {
+    const ok = f.id === 'auto' ? canRecord : mimeCandidates(f.id, true).some(isSupported);
+    return `<option value="${f.id}" ${ok ? '' : 'disabled'}>${esc(f.label)}${ok ? '' : ' — not supported'}</option>`;
+  }).join('');
+  const pref = savedPrefs.format && !sel.querySelector(`option[value="${savedPrefs.format}"]`)?.disabled ? savedPrefs.format : null;
+  const firstOk = [...sel.options].find(o => !o.disabled);
+  sel.value = pref || (firstOk ? firstOk.value : 'auto');
+}
+
+/* ---------- validation ---------- */
+const TOKENS = ['date', 'time', 'res', 'fps'];
+function expandName(tpl, s, w, h) {
+  const d = new Date();
+  const map = { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, time: `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`, res: w && h ? `${w}x${h}` : (s.res === 'native' ? 'native' : RES[s.res].join('x')), fps: `${s.fps}fps` };
+  return tpl.replace(/\{(\w+)\}/g, (m, k) => map[k] ?? m).replace(/\s+/g, ' ').trim();
+}
+function filenameError(name, isTemplate) {
+  const n = name.trim();
+  if (!n) return 'File name is required.';
+  if (isTemplate) { const bad = [...n.matchAll(/\{(\w*)\}/g)].map(m => m[1]).filter(k => !TOKENS.includes(k)); if (bad.length) return `Unknown token {${bad[0]}}. Use {date}, {time}, {res} or {fps}.`; if (/[{}]/.test(n.replace(/\{(\w+)\}/g, ''))) return 'Unmatched { or } in file name.'; }
+  if (/[<>:"/\\|?*\u0000-\u001F]/.test(n)) return 'File name can’t contain < > : " / \\ | ? * or control characters.';
+  if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\.|$)/i.test(n)) return 'That name is reserved by Windows. Pick another.';
+  if (/[. ]$/.test(n)) return 'File name can’t end with a dot or space.';
+  if (n.length > 120) return 'Keep the file name under 120 characters.';
+  return null;
+}
+function setFieldError(input, msg) {
+  const f = input.closest('.field'); if (!f) return;
+  f.classList.toggle('invalid', !!msg);
+  const e = $('.err', f); if (e) e.textContent = msg || '';
+  input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+}
+function validate(showAll = true) {
+  const s = readSettings(); const errs = [];
+  const add = (el, msg) => { errs.push({ el, msg }); if (showAll) setFieldError(el, msg); };
+  const clear = el => setFieldError(el, null);
+
+  // mode
+  const modeErr = $('#modeErr');
+  let mErr = null;
+  if (s.mode !== 'cam' && !CAP.display) mErr = 'Screen capture isn’t supported in this browser. Choose “Camera” or use desktop Chrome/Edge/Firefox.';
+  else if (s.mode !== 'screen' && !CAP.userMedia) mErr = 'Camera access isn’t supported in this browser.';
+  modeErr.textContent = mErr || ''; modeErr.parentElement.classList.toggle('invalid', !!mErr);
+  if (mErr) errs.push({ el: $('input[name="mode"]:checked'), msg: mErr });
+
+  // bitrate
+  const cb = $('#customBitrate');
+  if (s.quality === 'custom') {
+    const v = Number(s.customBitrate);
+    if (s.customBitrate.trim() === '' || !Number.isFinite(v)) add(cb, 'Enter a number.');
+    else if (v < 1 || v > 100) add(cb, 'Bitrate must be between 1 and 100 Mbps.');
+    else clear(cb);
+  } else clear(cb);
+
+  // format
+  const fmtEl = $('#format');
+  const fmtOpt = fmtEl.selectedOptions[0];
+  if (!fmtOpt || fmtOpt.disabled) add(fmtEl, 'This format isn’t supported by your browser.'); else clear(fmtEl);
+
+  // max duration
+  const mm = $('#maxMin');
+  const mv = Number(s.maxMin);
+  if (s.maxMin.trim() === '' || !Number.isInteger(mv)) add(mm, 'Whole minutes only (0 = no limit).');
+  else if (mv < 0 || mv > 720) add(mm, 'Between 0 and 720 minutes.');
+  else clear(mm);
+
+  // filename
+  const fn = $('#filename');
+  const fe = filenameError(s.filename, true) || filenameError(expandName(s.filename, s), false);
+  if (fe) add(fn, fe); else clear(fn);
+  $('#fnPreview').textContent = fe ? '—' : expandName(s.filename, s) + '.' + extFor(pickMime(s.format, true) || 'video/webm');
+
+  // audio-only sanity: camera mode with nothing? fine. Screen mode needs nothing extra.
+  return errs;
+}
+
+/* ---------- derived UI ---------- */
+function targetDims(s) {
+  if (s.res === 'native') return [Math.round(screen.width * (devicePixelRatio || 1)), Math.round(screen.height * (devicePixelRatio || 1))];
+  return RES[s.res];
+}
+function videoBitrate(s, w, h, fps = s.fps) {
+  if (s.quality === 'custom') { const v = Number(s.customBitrate); return Number.isFinite(v) && v >= 1 && v <= 100 ? Math.round(v * 1e6) : 12e6; }
+  return Math.round(QUALITY_BASE[s.quality] * 1e6 * (w * h) / (1920 * 1080) * Math.pow(fps / 30, 0.75));
+}
+function updateDerived() {
+  const s = readSettings();
+  const [w, h] = targetDims(s);
+  const vb = videoBitrate(s, w, h);
+  const hasAudio = s.sysAudio || s.mic;
+  const ab = hasAudio ? s.audioBitrate : 0;
+  $('#estBitrate').textContent = `${(vb / 1e6).toFixed(1)} Mbps`;
+  $('#estSize').textContent = fmtBytes((vb + ab) * 60 / 8);
+  $('#customBitrateField').classList.toggle('hidden', s.quality !== 'custom');
+  $('#micOpts').classList.toggle('hidden', !s.mic);
+  $('#sysAudioRow').classList.toggle('hidden', s.mode === 'cam');
+
+  // camera card
+  const camOn = s.mode !== 'screen';
+  $('#camCard').style.opacity = camOn ? '' : '.55';
+  $('#camTag').textContent = camOn ? '' : 'not used in Screen mode';
+  $('#camStyleField').classList.toggle('hidden', s.mode !== 'screen-cam');
+  $('#embedOpts').classList.toggle('hidden', !(s.mode === 'screen-cam' && s.camStyle === 'embed'));
+  const embedInput = $('input[name="camStyle"][value="embed"]');
+  embedInput.disabled = !CAP.composite;
+  if (!CAP.composite && s.camStyle === 'embed') setRadio('camStyle', 'pip');
+  $('#camStyleHint').textContent = !CAP.composite ? 'Embedding needs Chrome or Edge — using floating bubble.'
+    : s.camStyle === 'embed' ? 'Webcam is drawn into the video. Works with any screen, window or tab.'
+    : 'Webcam floats on top of everything — only visible when you record the entire screen.';
+  $('#camVideo').classList.toggle('mirror', s.camMirror);
+
+  // resolution hint
+  const sw = Math.round(screen.width * (devicePixelRatio || 1)), sh = Math.round(screen.height * (devicePixelRatio || 1));
+  const hint = $('#resHint');
+  if (s.mode !== 'cam' && s.res !== 'native' && (sw < w || sh < h)) { hint.textContent = `Your display is ${sw}×${sh}. Captures can’t exceed the shared screen’s size, so the output will be at most ${sw}×${sh}.`; hint.classList.remove('hidden'); }
+  else hint.classList.add('hidden');
+
+  // format hint
+  const mime = pickMime(s.format, hasAudio, w, h, s.fps);
+  $('#formatHint').textContent = mime === undefined ? 'Not supported at this resolution/frame rate — try another format.' : mime ? `Codec: ${mime.replace('video/', '')}` : 'The browser picks the codec.';
+
+  // summary
+  const modeLbl = { screen: 'Screen', 'screen-cam': 'Screen + Camera', cam: 'Camera' }[s.mode];
+  const fmtLbl = (FORMATS.find(f => f.id === s.format) || {}).label || '';
+  const audio = [s.mode !== 'cam' && s.sysAudio ? 'System audio' : null, s.mic ? 'Mic' : null].filter(Boolean).join(' + ') || 'No audio';
+  $('#summary').innerHTML = [modeLbl, s.res === 'native' ? 'Native res' : `${w}×${h}`, `${s.fps} fps`, fmtLbl.split(' (')[0], audio].map(t => `<span>${esc(t)}</span>`).join('');
+  validate(false);
+}
+
+/* ---------- devices ---------- */
+async function refreshDevices() {
+  if (!navigator.mediaDevices?.enumerateDevices) return;
+  let devs = [];
+  try { devs = await navigator.mediaDevices.enumerateDevices(); } catch { return; }
+  const fill = (sel, kind, defLabel, pref) => {
+    const cur = sel.value || pref || '';
+    const list = devs.filter(d => d.kind === kind && d.deviceId && d.deviceId !== 'default' && d.deviceId !== 'communications');
+    sel.innerHTML = `<option value="">${defLabel}</option>` + list.map((d, i) => `<option value="${esc(d.deviceId)}">${esc(d.label || `${kind === 'audioinput' ? 'Microphone' : 'Camera'} ${i + 1}`)}</option>`).join('');
+    if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+  };
+  fill($('#micDevice'), 'audioinput', 'Default microphone', savedPrefs.micDevice);
+  fill($('#camDevice'), 'videoinput', 'Default camera', savedPrefs.camDevice);
+}
+
+/* ---------- audio meters ---------- */
+const meters = { mic: null, sys: null }; // {analyser, buf}
+let meterRAF = 0;
+function meterLoop() {
+  for (const k of ['mic', 'sys']) {
+    const m = meters[k], bar = $(`#${k}Bar`), st = $(`#${k}St`);
+    if (!m) { bar.style.width = '0%'; continue; }
+    m.analyser.getFloatTimeDomainData(m.buf);
+    let sum = 0; for (let i = 0; i < m.buf.length; i++) sum += m.buf[i] * m.buf[i];
+    const db = 20 * Math.log10(Math.sqrt(sum / m.buf.length) || 1e-8);
+    const pct = Math.max(0, Math.min(100, (db + 60) / 60 * 100));
+    bar.style.width = pct.toFixed(1) + '%';
+    st.textContent = m.muted ? 'muted' : (db < -59 ? 'silent' : `${Math.round(db)} dB`);
+  }
+  meterRAF = (meters.mic || meters.sys) ? requestAnimationFrame(meterLoop) : 0;
+}
+function setMeter(k, analyser, label) {
+  meters[k] = analyser ? { analyser, buf: new Float32Array(analyser.fftSize), muted: false } : null;
+  if (!analyser) { $(`#${k}Bar`).style.width = '0%'; $(`#${k}St`).textContent = label || 'off'; }
+  if (!meterRAF && (meters.mic || meters.sys)) meterRAF = requestAnimationFrame(meterLoop);
+}
+
+/* ---------- mic test ---------- */
+let micTest = null;
+async function toggleMicTest() {
+  if (micTest) { stopMicTest(); return; }
+  const s = readSettings();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: micConstraints(s), video: false });
+    const ctx = new AudioContext();
+    const src = ctx.createMediaStreamSource(stream);
+    const gain = ctx.createGain(); gain.gain.value = s.micGain / 100;
+    const an = ctx.createAnalyser(); an.fftSize = 1024;
+    src.connect(gain).connect(an);
+    micTest = { stream, ctx, gain };
+    setMeter('mic', an);
+    $('#micTestBtn').textContent = 'Stop test';
+    $('#micTestBtn').classList.add('on');
+    refreshDevices();
+    toast('ok', 'Microphone is working', 'Speak and watch the MIC meter. Adjust the volume slider if it peaks in the red.');
+  } catch (e) { toast('err', 'Microphone test failed', mediaError(e, 'microphone')); }
+}
+function stopMicTest() {
+  if (!micTest) return;
+  micTest.stream.getTracks().forEach(t => t.stop()); micTest.ctx.close().catch(() => {});
+  micTest = null; setMeter('mic', null);
+  $('#micTestBtn').textContent = 'Test microphone'; $('#micTestBtn').classList.remove('on');
+}
+function micConstraints(s) {
+  const c = { echoCancellation: s.noiseSup, noiseSuppression: s.noiseSup, autoGainControl: s.noiseSup, channelCount: { ideal: 2 }, sampleRate: { ideal: 48000 } };
+  if (s.micDevice) c.deviceId = { exact: s.micDevice };
+  return c;
+}
+
+/* ---------- camera preview ---------- */
+let camPreview = null; // {stream, deviceId}
+function camConstraints(s, forRecording) {
+  const [w, h] = s.mode === 'cam' ? (s.res === 'native' ? [1920, 1080] : RES[s.res]) : [1280, 720];
+  const c = { width: { ideal: w }, height: { ideal: h }, frameRate: { ideal: forRecording ? s.fps : 30 } };
+  if (s.camDevice) c.deviceId = { exact: s.camDevice };
+  return c;
+}
+async function startCamPreview(silent) {
+  const s = readSettings();
+  stopCamPreview();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: camConstraints(s, s.mode === 'cam'), audio: false });
+    camPreview = { stream, deviceId: s.camDevice };
+    $('#camVideo').srcObject = stream;
+    $('#camPrev').classList.add('on');
+    $('#camPrevBtn').textContent = 'Turn off preview';
+    setFieldError($('#camDevice'), null);
+    refreshDevices();
+    stream.getVideoTracks()[0].addEventListener('ended', () => { if (camPreview?.stream === stream) { stopCamPreview(); toast('warn', 'Camera disconnected'); } });
+    return true;
+  } catch (e) {
+    const msg = mediaError(e, 'camera');
+    setFieldError($('#camDevice'), msg);
+    if (!silent) toast('err', 'Camera unavailable', msg);
+    return false;
+  }
+}
+function stopCamPreview() {
+  if (!camPreview) return;
+  if (!(rec && rec.camStream === camPreview.stream)) camPreview.stream.getTracks().forEach(t => t.stop());
+  camPreview = null;
+  $('#camVideo').srcObject = null;
+  $('#camPrev').classList.remove('on');
+  $('#camPrevBtn').textContent = 'Turn on preview';
+}
+
+/* ---------- camera compositing (Chrome/Edge: insertable streams) ---------- */
+function createCompositor(screenTrack, camTrack, cfgRef, fps) {
+  const proc = new MediaStreamTrackProcessor({ track: screenTrack });
+  const camProc = new MediaStreamTrackProcessor({ track: camTrack });
+  const gen = new MediaStreamTrackGenerator({ kind: 'video' });
+  const writer = gen.writable.getWriter();
+  let running = true, screenFrame = null, camFrame = null, canvas = null, ctx = null;
+  let busy = false, pending = false, lastTs = 0, lastRender = 0; const readers = [];
+  const minGap = 1000 / fps * 0.9;
+
+  function drawCam(w, h) {
+    const cfg = cfgRef();
+    if (!camFrame || !cfg.visible) return;
+    const cw = camFrame.displayWidth, ch = camFrame.displayHeight;
+    const bw = Math.round(w * cfg.size);
+    const bh = cfg.shape === 'circle' ? bw : Math.round(bw * 3 / 4);
+    const m = Math.round(w * 0.022);
+    const x = cfg.pos[1] === 'l' ? m : w - bw - m;
+    const y = cfg.pos[0] === 't' ? m : h - bh - m;
+    // source crop to box aspect
+    const ar = bw / bh;
+    let sw = cw, sh = cw / ar; if (sh > ch) { sh = ch; sw = ch * ar; }
+    const sx = (cw - sw) / 2, sy = (ch - sh) / 2;
+    const r = cfg.shape === 'circle' ? bw / 2 : Math.round(bw * 0.08);
+    const path = new Path2D();
+    if (cfg.shape === 'circle') path.arc(x + bw / 2, y + bh / 2, bw / 2, 0, Math.PI * 2);
+    else path.roundRect(x, y, bw, bh, r);
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = Math.round(w * 0.01); ctx.shadowOffsetY = Math.round(w * 0.003);
+    ctx.fillStyle = '#000'; ctx.fill(path);
+    ctx.restore();
+    ctx.save();
+    ctx.clip(path);
+    if (cfg.mirror) { ctx.translate(x + bw, y); ctx.scale(-1, 1); ctx.drawImage(camFrame, sx, sy, sw, sh, 0, 0, bw, bh); }
+    else ctx.drawImage(camFrame, sx, sy, sw, sh, x, y, bw, bh);
+    ctx.restore();
+    ctx.save();
+    ctx.lineWidth = Math.max(2, Math.round(w * 0.0025)); ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.stroke(path);
+    ctx.restore();
+  }
+
+  async function render(force) {
+    if (!running || !screenFrame) return;
+    const now = performance.now();
+    if (!force && now - lastRender < minGap) return;
+    if (busy) { pending = true; return; }
+    busy = true;
+    try {
+      do {
+        pending = false;
+        const w = screenFrame.displayWidth, h = screenFrame.displayHeight;
+        if (!canvas || canvas.width !== w || canvas.height !== h) { canvas = new OffscreenCanvas(w, h); ctx = canvas.getContext('2d', { alpha: false }); }
+        ctx.drawImage(screenFrame, 0, 0, w, h);
+        drawCam(w, h);
+        let ts = Math.round(performance.now() * 1000); if (ts <= lastTs) ts = lastTs + 1; lastTs = ts;
+        lastRender = performance.now();
+        const out = new VideoFrame(canvas, { timestamp: ts });
+        try { await writer.write(out); } finally { out.close(); }
+      } while (pending && running);
+    } catch (e) { if (running) console.warn('compositor', e); }
+    busy = false;
+  }
+
+  (async () => {
+    const r = camProc.readable.getReader(); readers.push(r);
+    try { while (running) { const { value, done } = await r.read(); if (done) break; if (!running) { value.close(); break; } if (camFrame) camFrame.close(); camFrame = value; render(false); } } catch {}
+    if (camFrame) { camFrame.close(); camFrame = null; }
+  })();
+  (async () => {
+    const r = proc.readable.getReader(); readers.push(r);
+    try { while (running) { const { value, done } = await r.read(); if (done) break; if (!running) { value.close(); break; } if (screenFrame) screenFrame.close(); screenFrame = value; render(true); } } catch {}
+    if (screenFrame) { screenFrame.close(); screenFrame = null; }
+  })();
+
+  return {
+    track: gen,
+    stop() { running = false; readers.forEach(r => r.cancel().catch(() => {})); try { writer.close(); } catch {} gen.stop(); if (screenFrame) { screenFrame.close(); screenFrame = null; } if (camFrame) { camFrame.close(); camFrame = null; } },
+  };
+}
+
+/* ---------- floating camera bubble ---------- */
+let bubble = null;
+async function openBubble(stream, mirror) {
+  closeBubble();
+  const v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.autoplay = true; v.srcObject = stream;
+  await new Promise(res => { if (v.readyState >= 1) res(); else v.onloadedmetadata = res; setTimeout(res, 1500); });
+  await v.play().catch(() => {});
+  if (CAP.docPip) {
+    const win = await documentPictureInPicture.requestWindow({ width: 240, height: 240 });
+    win.document.body.style.cssText = 'margin:0;background:#0a0c11;display:grid;place-items:center;height:100vh;overflow:hidden';
+    v.style.cssText = `width:min(100vw,100vh);height:min(100vw,100vh);object-fit:cover;border-radius:50%;${mirror ? 'transform:scaleX(-1);' : ''}`;
+    win.document.body.append(v);
+    win.document.title = 'Camera';
+    bubble = { win, v };
+    win.addEventListener('pagehide', () => { if (bubble && bubble.win === win) bubble = null; updateButtons(); });
+  } else if (CAP.pip) {
+    await v.requestPictureInPicture();
+    bubble = { v };
+    v.addEventListener('leavepictureinpicture', () => { if (bubble && bubble.v === v) bubble = null; updateButtons(); });
+  } else throw new Error('Picture-in-Picture isn’t supported in this browser.');
+  updateButtons();
+}
+function closeBubble() {
+  if (!bubble) return;
+  const b = bubble; bubble = null;
+  try { if (b.win) b.win.close(); else if (document.pictureInPictureElement) document.exitPictureInPicture(); } catch {}
+  updateButtons();
+}
+
+/* ---------- recording engine ---------- */
+let phase = 'idle'; // idle | acquiring | countdown | recording | paused | stopping
+let rec = null;     // active session
+let countdownCancel = null;
+const recordings = [];
+const live = { visible: true }; // live camera overlay visibility
+
+function camCfg() {
+  const s = readSettings();
+  return { visible: live.visible, pos: s.camPos || 'br', size: s.camSize || 0.2, shape: s.camShape, mirror: s.camMirror };
+}
+
+async function start() {
+  if (phase !== 'idle') return;
+  stopPlayback();
+  const errs = validate(true);
+  if (errs.length) {
+    toast('err', 'Please fix the highlighted settings', errs[0].msg);
+    errs[0].el?.focus?.();
+    return;
+  }
+  const s = readSettings();
+  setPhase('acquiring');
+  const warnings = [];
+  const session = { s, tracks: [], chunks: [], bytes: 0, warnings, micMuted: false };
+  rec = session;
+
+  try {
+    let screenStream = null, videoTrack = null;
+    const [tw, th] = targetDims(s);
+
+    // 1) Screen
+    if (s.mode !== 'cam') {
+      const video = { frameRate: { ideal: s.fps, max: s.fps } };
+      if (s.res !== 'native') { video.width = { ideal: tw, max: tw }; video.height = { ideal: th, max: th }; }
+      const opts = {
+        video,
+        audio: s.sysAudio ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: false } : false,
+        selfBrowserSurface: 'exclude', surfaceSwitching: 'include', systemAudio: s.sysAudio ? 'include' : 'exclude', monitorTypeSurfaces: 'include',
+      };
+      try { screenStream = await navigator.mediaDevices.getDisplayMedia(opts); }
+      catch (e) {
+        // retry once without optional hints for older browsers
+        if (e.name === 'TypeError' || e.name === 'OverconstrainedError') screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: !!s.sysAudio });
+        else throw Object.assign(e, { _what: 'screen' });
+      }
+      session.screenStream = screenStream;
+      screenStream.getTracks().forEach(t => session.tracks.push(t));
+      videoTrack = screenStream.getVideoTracks()[0];
+      if (!videoTrack) throw Object.assign(new Error('No video track was shared.'), { _what: 'screen' });
+      try { videoTrack.contentHint = s.optimize === 'motion' ? 'motion' : 'detail'; } catch {}
+      const st = videoTrack.getSettings();
+      session.surface = st.displaySurface;
+      if (s.res !== 'native' && st.width && st.height && st.width < tw * 0.98 && st.height < th * 0.98)
+        warnings.push(`The shared ${st.displaySurface || 'source'} is ${st.width}×${st.height}, smaller than ${tw}×${th}. Recording at the source’s full size.`);
+      if (s.sysAudio && !screenStream.getAudioTracks().length)
+        warnings.push('No system audio was shared. Next time tick “Share audio” in the picker (tab or entire-screen sharing).');
+      videoTrack.addEventListener('ended', () => { if (rec === session && (phase === 'recording' || phase === 'paused')) stop('Screen sharing ended.'); else if (rec === session && phase === 'countdown') cancelCountdown('Screen sharing ended before recording started.'); });
+    }
+
+    // 2) Microphone
+    let micStream = null;
+    if (s.mic) {
+      stopMicTest();
+      try { micStream = await navigator.mediaDevices.getUserMedia({ audio: micConstraints(s), video: false }); }
+      catch (e) {
+        if (e.name === 'OverconstrainedError' && s.micDevice) {
+          try { micStream = await navigator.mediaDevices.getUserMedia({ audio: true }); warnings.push('Selected microphone wasn’t found — using the default one.'); } catch (e2) { warnings.push('Microphone: ' + mediaError(e2, 'microphone') + ' Recording without mic.'); }
+        } else warnings.push('Microphone: ' + mediaError(e, 'microphone') + ' Recording without mic.');
+      }
+      if (micStream) { micStream.getTracks().forEach(t => session.tracks.push(t)); micStream.getAudioTracks()[0].addEventListener('ended', () => { if (rec === session) toast('warn', 'Microphone disconnected', 'Recording continues without mic audio.'); }); }
+    }
+
+    // 3) Camera
+    let camStream = null;
+    if (s.mode !== 'screen') {
+      const needRes = s.mode === 'cam';
+      if (camPreview && camPreview.deviceId === s.camDevice && !needRes) camStream = camPreview.stream;
+      else {
+        stopCamPreview();
+        try { camStream = await navigator.mediaDevices.getUserMedia({ video: camConstraints(s, true), audio: false }); }
+        catch (e) {
+          if (s.mode === 'cam') throw Object.assign(e, { _what: 'camera' });
+          warnings.push('Camera: ' + mediaError(e, 'camera') + ' Recording screen only.');
+        }
+        if (camStream) { camPreview = { stream: camStream, deviceId: s.camDevice }; $('#camVideo').srcObject = camStream; $('#camPrev').classList.add('on'); $('#camPrevBtn').textContent = 'Turn off preview'; }
+      }
+      session.camStream = camStream;
+      if (camStream) camStream.getVideoTracks()[0].addEventListener('ended', () => { if (rec === session) toast('warn', 'Camera disconnected', 'Recording continues without the camera.'); });
+    }
+
+    // 4) Build final video track
+    if (s.mode === 'cam') {
+      videoTrack = camStream.getVideoTracks()[0];
+      try { videoTrack.contentHint = 'motion'; } catch {}
+    } else if (s.mode === 'screen-cam' && camStream) {
+      if (s.camStyle === 'embed' && CAP.composite) {
+        live.visible = true;
+        session.compositor = createCompositor(videoTrack, camStream.getVideoTracks()[0], camCfg, s.fps);
+        videoTrack = session.compositor.track;
+      } else {
+        session.pip = true;
+        if (session.surface && session.surface !== 'monitor') warnings.push('The floating camera only appears in “Entire screen” recordings. Use “Embed in video” to include it in window/tab recordings.');
+        try { await openBubble(camStream, s.camMirror); }
+        catch { warnings.push('Click “Float camera” to pop out the camera bubble (the browser needs a click to open it).'); }
+      }
+    }
+
+    // 5) Audio mix
+    const audioSrcs = [];
+    if (screenStream && screenStream.getAudioTracks().length) audioSrcs.push(['sys', screenStream]);
+    if (micStream) audioSrcs.push(['mic', micStream]);
+    let audioTrack = null;
+    if (audioSrcs.length) {
+      const actx = new AudioContext({ sampleRate: 48000, latencyHint: 'interactive' });
+      if (actx.state === 'suspended') await actx.resume().catch(() => {});
+      const dest = actx.createMediaStreamDestination();
+      dest.channelCount = 2;
+      for (const [k, stream] of audioSrcs) {
+        const src = actx.createMediaStreamSource(stream);
+        const gain = actx.createGain();
+        gain.gain.value = k === 'mic' ? s.micGain / 100 : 1;
+        const an = actx.createAnalyser(); an.fftSize = 1024;
+        src.connect(gain); gain.connect(dest); gain.connect(an);
+        setMeter(k, an);
+        if (k === 'mic') session.micGain = gain;
+      }
+      session.actx = actx;
+      audioTrack = dest.stream.getAudioTracks()[0];
+    }
+    if (!meters.sys) setMeter('sys', null, s.mode === 'cam' ? 'n/a' : 'none');
+    if (!meters.mic) setMeter('mic', null, s.mic ? 'none' : 'off');
+
+    const finalStream = new MediaStream([videoTrack, ...(audioTrack ? [audioTrack] : [])]);
+    session.finalStream = finalStream;
+
+    // 6) Recorder
+    const vs = (s.mode === 'cam' ? videoTrack : (screenStream.getVideoTracks()[0])).getSettings();
+    const ow = vs.width || tw, oh = vs.height || th, ofps = Math.round(vs.frameRate || s.fps);
+    session.dims = [ow, oh]; session.fps = Math.min(ofps || s.fps, s.fps) || s.fps;
+    let mime = pickMime(s.format, !!audioTrack, ow, oh, s.fps);
+    if (mime === undefined) { mime = ''; warnings.push('Chosen format isn’t supported at this size — using the browser’s default format.'); }
+    const vbps = videoBitrate(s, ow, oh, s.fps);
+    const opts = { videoBitsPerSecond: vbps, videoKeyFrameIntervalDuration: 2000 };
+    if (audioTrack) opts.audioBitsPerSecond = s.audioBitrate;
+    if (mime) opts.mimeType = mime;
+    let mr;
+    try { mr = new MediaRecorder(finalStream, opts); }
+    catch (e) { delete opts.mimeType; mr = new MediaRecorder(finalStream, opts); warnings.push('Requested codec was rejected — fell back to the browser default.'); }
+    session.mr = mr; session.vbps = vbps;
+    mr.ondataavailable = e => { if (e.data && e.data.size) { session.chunks.push(e.data); session.bytes += e.data.size; } };
+    mr.onerror = e => { toast('err', 'Recorder error', (e.error && e.error.message) || 'The recorder stopped unexpectedly. Saving what was captured.'); if (rec === session && phase !== 'stopping') stop(); };
+    mr.onstop = () => finalize(session);
+
+    // live preview
+    const pv = $('#preview');
+    pv.removeAttribute('src'); pv.controls = false; pv.muted = true; pv.srcObject = new MediaStream([videoTrack]);
+    pv.play().catch(() => {});
+    $('#viewer').classList.add('live');
+    $('#resPill').textContent = `${ow}×${oh} · ${session.fps} fps`;
+    const lim = Number(s.maxMin);
+    $('#limitPill').hidden = !lim; if (lim) $('#limitPill').textContent = `Auto-stop ${fmtTime(lim * 60000)}`;
+
+    warnings.forEach(w => toast('warn', 'Heads up', w, { timeout: 9000 }));
+
+    // 7) Countdown
+    if (s.countdown > 0) {
+      setPhase('countdown');
+      const ok = await runCountdown(s.countdown);
+      if (!ok || rec !== session) return;
+    }
+
+    // 8) Go
+    mr.start(1000);
+    session.startedAt = Date.now(); session.segStart = performance.now(); session.activeMs = 0;
+    setPhase('recording');
+    session.ticker = setInterval(() => tick(session), 250);
+    tick(session);
+  } catch (e) {
+    const what = e._what || 'screen';
+    const msg = mediaError(e, what);
+    if (e.name === 'NotAllowedError' && what === 'screen' && msg === 'Screen sharing was cancelled.') toast('warn', 'Cancelled', 'No screen was selected.');
+    else toast('err', what === 'camera' ? 'Camera unavailable' : 'Couldn’t start recording', msg);
+    teardown(session);
+    setPhase('idle');
+  }
+}
+
+function runCountdown(n) {
+  return new Promise(resolve => {
+    const cd = $('#countdown'), num = $('#cdNum');
+    cd.classList.add('show');
+    let left = n, timer;
+    const step = () => {
+      if (left <= 0) { finish(true); return; }
+      num.textContent = left; num.style.animation = 'none'; void num.offsetWidth; num.style.animation = '';
+      left--; timer = setTimeout(step, 1000);
+    };
+    const finish = ok => { clearTimeout(timer); cd.classList.remove('show'); countdownCancel = null; resolve(ok); };
+    countdownCancel = finish;
+    step();
+  });
+}
+function cancelCountdown(reason) {
+  if (!countdownCancel) return;
+  countdownCancel(false);
+  const session = rec;
+  teardown(session);
+  setPhase('idle');
+  toast('warn', 'Recording cancelled', reason || 'Countdown cancelled.');
+}
+
+function tick(session) {
+  if (rec !== session) return;
+  const elapsed = session.activeMs + (phase === 'recording' ? performance.now() - session.segStart : 0);
+  $('#timer').textContent = fmtTime(elapsed);
+  $('#sizePill').textContent = fmtBytes(session.bytes) + (elapsed > 3000 ? ` · ${(session.bytes * 8 / (elapsed / 1000) / 1e6).toFixed(1)} Mbps` : '');
+  document.title = `${phase === 'paused' ? '❚❚' : '●'} ${fmtTime(elapsed)} — ScreenCast Pro`;
+  const lim = Number(session.s.maxMin);
+  if (lim && elapsed >= lim * 60000 && phase === 'recording') stop(`Auto-stopped at the ${lim}-minute limit.`);
+  if (session.bytes > 3.5 * 1024 ** 3 && !session.memWarned) { session.memWarned = true; toast('warn', 'Large recording', 'Over 3.5 GB is held in memory. Consider stopping and downloading soon.', { timeout: 0 }); }
+}
+
+function pause() {
+  if (!rec) return;
+  if (phase === 'recording') { rec.mr.pause(); rec.activeMs += performance.now() - rec.segStart; setPhase('paused'); }
+  else if (phase === 'paused') { rec.mr.resume(); rec.segStart = performance.now(); setPhase('recording'); }
+  tick(rec);
+}
+
+function stop(reason) {
+  if (!rec) return;
+  if (phase === 'countdown') { cancelCountdown(); return; }
+  if (phase !== 'recording' && phase !== 'paused') return;
+  const session = rec;
+  if (phase === 'recording') session.activeMs += performance.now() - session.segStart;
+  session.reason = reason;
+  setPhase('stopping');
+  clearInterval(session.ticker);
+  try { if (session.mr.state !== 'inactive') session.mr.stop(); else finalize(session); } catch { finalize(session); }
+}
+
+async function finalize(session) {
+  if (session.finalized) return;
+  session.finalized = true;
+  const mime = session.mr.mimeType || 'video/webm';
+  const ext = extFor(mime);
+  const baseType = mime.split(';')[0];
+  let blob = new Blob(session.chunks, { type: baseType });
+  const durationMs = session.activeMs;
+  teardown(session);
+  setPhase('idle');
+
+  if (!blob.size || durationMs < 500) {
+    toast('warn', 'Nothing saved', 'The recording was empty or shorter than half a second.');
+    return;
+  }
+  if (ext !== 'mp4') { try { blob = await fixWebmDuration(blob, durationMs); } catch (e) { console.warn('duration fix failed', e); } }
+
+  const [w, h] = session.dims;
+  let name = expandName(session.s.filename, session.s, w, h);
+  if (filenameError(name, false)) name = `Recording ${expandName('{date} {time}', session.s)}`;
+  const item = { id: Math.random().toString(36).slice(2), name, ext, blob, url: URL.createObjectURL(blob), mime, durationMs, w, h, fps: session.fps, at: new Date(), saved: false, bitrate: session.vbps };
+  recordings.unshift(item);
+  renderRecordings();
+  toast('ok', 'Recording saved', `${session.reason ? session.reason + ' ' : ''}${fmtTime(durationMs)} · ${fmtBytes(blob.size)} · ${w}×${h}`, { actions: [['Download', () => download(item)], ['Play', () => play(item)]] });
+  if (session.s.autoDownload) download(item);
+}
+
+function teardown(session) {
+  if (!session) return;
+  clearInterval(session.ticker);
+  if (session.compositor) { session.compositor.stop(); session.compositor = null; }
+  session.tracks.forEach(t => { try { t.stop(); } catch {} });
+  if (session.camStream) { session.camStream.getTracks().forEach(t => t.stop()); if (camPreview && camPreview.stream === session.camStream) { camPreview = null; $('#camVideo').srcObject = null; $('#camPrev').classList.remove('on'); $('#camPrevBtn').textContent = 'Turn on preview'; } }
+  if (session.finalStream) session.finalStream.getTracks().forEach(t => { try { t.stop(); } catch {} });
+  if (session.actx) session.actx.close().catch(() => {});
+  if (session.pip) closeBubble();
+  setMeter('mic', null); setMeter('sys', null);
+  const pv = $('#preview'); pv.srcObject = null;
+  $('#viewer').classList.remove('live');
+  document.title = 'ScreenCast Pro — Full HD Screen Recorder';
+  if (rec === session) rec = null;
+  live.visible = true;
+}
+
+/* ---------- WebM duration patch (makes files seekable) ---------- */
+async function fixWebmDuration(blob, durationMs) {
+  const head = new Uint8Array(await blob.slice(0, Math.min(blob.size, 1 << 20)).arrayBuffer());
+  const vint = (p, keepMarker) => {
+    if (p >= head.length) return null;
+    const b = head[p]; let len = 1, m = 0x80;
+    while (len <= 8 && !(b & m)) { m >>= 1; len++; }
+    if (len > 8 || p + len > head.length) return null;
+    let v = keepMarker ? b : (b & (m - 1)); let ones = (b & (m - 1)) === (m - 1);
+    for (let i = 1; i < len; i++) { v = v * 256 + head[p + i]; if (head[p + i] !== 0xff) ones = false; }
+    return { v, len, unknown: !keepMarker && ones };
+  };
+  let p = 0;
+  let id = vint(p, true); if (!id || id.v !== 0x1A45DFA3) return blob;
+  let sz = vint(p + id.len); p += id.len + sz.len + sz.v;
+  id = vint(p, true); if (!id || id.v !== 0x18538067) return blob;
+  sz = vint(p + id.len); p += id.len + sz.len;
+  while (p < head.length - 12) {
+    id = vint(p, true); if (!id) return blob;
+    sz = vint(p + id.len); if (!sz) return blob;
+    const ds = p + id.len + sz.len;
+    if (id.v === 0x1549A966) { // Info
+      if (sz.unknown || ds + sz.v > head.length) return blob;
+      const de = ds + sz.v;
+      let q = ds, scale = 1000000, durPos = -1, durSize = 0;
+      while (q < de) {
+        const cid = vint(q, true); if (!cid) return blob;
+        const cs = vint(q + cid.len); if (!cs) return blob;
+        const cd = q + cid.len + cs.len;
+        if (cid.v === 0x2AD7B1) { let v = 0; for (let i = 0; i < cs.v; i++) v = v * 256 + head[cd + i]; scale = v || 1000000; }
+        else if (cid.v === 0x4489) { durPos = cd; durSize = cs.v; }
+        q = cd + cs.v;
+      }
+      const dur = durationMs * 1e6 / scale;
+      if (durPos >= 0) {
+        const patched = head.slice(p, de); const dv = new DataView(patched.buffer); const off = durPos - p;
+        if (durSize === 8) dv.setFloat64(off, dur); else if (durSize === 4) dv.setFloat32(off, dur); else return blob;
+        return new Blob([blob.slice(0, p), patched, blob.slice(de)], { type: blob.type });
+      }
+      const children = head.slice(ds, de);
+      const durEl = new Uint8Array(11); durEl.set([0x44, 0x89, 0x88]); new DataView(durEl.buffer).setFloat64(3, dur);
+      const hdr = new Uint8Array(12); hdr.set([0x15, 0x49, 0xA9, 0x66, 0x01]);
+      let v = children.length + 11; for (let i = 11; i >= 5; i--) { hdr[i] = v & 0xff; v = Math.floor(v / 256); }
+      return new Blob([blob.slice(0, p), hdr, children, durEl, blob.slice(de)], { type: blob.type });
+    }
+    if (id.v === 0x1F43B675 || sz.unknown) return blob; // reached Cluster
+    p = ds + sz.v;
+  }
+  return blob;
+}
+
+/* ---------- recordings list ---------- */
+let playingId = null;
+function renderRecordings() {
+  const box = $('#recs');
+  const total = recordings.reduce((a, r) => a + r.blob.size, 0);
+  $('#recsInfo').textContent = recordings.length ? `${recordings.length} in this tab · ${fmtBytes(total)} · download to keep them` : 'Kept in this tab until you download them — nothing is uploaded.';
+  if (!recordings.length) { box.innerHTML = '<div class="empty">No recordings yet.</div>'; return; }
+  box.innerHTML = recordings.map(r => `
+    <div class="rec-item ${r.id === playingId ? 'active' : ''}" data-id="${r.id}">
+      <div class="thumb" data-act="play" title="Play"><video src="${r.url}#t=0.5" preload="metadata" muted playsinline></video><span class="dur">${fmtTime(r.durationMs)}</span></div>
+      <div style="min-width:0">
+        <div class="rec-name" title="${esc(r.name)}.${r.ext}">${esc(r.name)}<span style="color:var(--dim)">.${r.ext}</span></div>
+        <div class="rec-meta"><span>${r.w}×${r.h}</span><span>${r.fps} fps</span><span>${fmtBytes(r.blob.size)}</span><span>${r.ext.toUpperCase()}</span><span>${r.at.toLocaleTimeString()}</span>${r.saved ? '<span class="saved">✓ downloaded</span>' : ''}</div>
+      </div>
+      <div class="rec-actions">
+        <button class="btn sm" data-act="play">Play</button>
+        <button class="btn sm" data-act="rename">Rename</button>
+        ${CAP.savePicker ? '<button class="btn sm" data-act="saveas">Save as…</button>' : ''}
+        <button class="btn sm primary" data-act="download">Download</button>
+        <button class="btn sm danger" data-act="delete">Delete</button>
+      </div>
+    </div>`).join('');
+}
+$('#recs').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const id = btn.closest('.rec-item').dataset.id; const r = recordings.find(x => x.id === id); if (!r) return;
+  const act = btn.dataset.act;
+  if (act === 'play') play(r);
+  else if (act === 'download') download(r);
+  else if (act === 'saveas') saveAs(r);
+  else if (act === 'rename') startRename(btn.closest('.rec-item'), r);
+  else if (act === 'delete') {
+    if (!btn.classList.contains('confirm')) { btn.classList.add('confirm'); btn.textContent = r.saved ? 'Confirm' : 'Not downloaded — delete?'; setTimeout(() => { if (btn.isConnected) { btn.classList.remove('confirm'); btn.textContent = 'Delete'; } }, 4000); return; }
+    if (playingId === r.id) stopPlayback();
+    URL.revokeObjectURL(r.url);
+    recordings.splice(recordings.indexOf(r), 1);
+    renderRecordings();
+  }
+});
+function startRename(row, r) {
+  const holder = $('.rec-name', row);
+  holder.innerHTML = `<input type="text" maxlength="120" value="${esc(r.name)}" aria-label="Recording name">`;
+  const inp = $('input', holder); inp.focus(); inp.select();
+  const errEl = document.createElement('div'); errEl.className = 'rec-err'; holder.after(errEl);
+  const commit = save => {
+    if (!save) { renderRecordings(); return; }
+    const msg = filenameError(inp.value, false);
+    if (msg) { inp.classList.add('bad'); errEl.textContent = msg; inp.focus(); return false; }
+    r.name = inp.value.trim(); renderRecordings(); return true;
+  };
+  inp.addEventListener('input', () => { const m = filenameError(inp.value, false); inp.classList.toggle('bad', !!m); errEl.textContent = m || ''; });
+  inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') commit(true); if (ev.key === 'Escape') commit(false); });
+  inp.addEventListener('blur', () => { if (filenameError(inp.value, false)) commit(false); else commit(true); });
+}
+function play(r) {
+  if (phase !== 'idle') { toast('warn', 'Recording in progress', 'Stop the current recording to play back.'); return; }
+  const pv = $('#preview');
+  pv.srcObject = null; pv.src = r.url; pv.muted = false; pv.controls = true;
+  $('#viewer').classList.add('playback');
+  playingId = r.id; renderRecordings();
+  pv.play().catch(() => {});
+  $('#viewer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function stopPlayback() {
+  const pv = $('#preview');
+  pv.pause(); pv.removeAttribute('src'); pv.load(); pv.controls = false; pv.muted = true;
+  $('#viewer').classList.remove('playback');
+  if (playingId) { playingId = null; renderRecordings(); }
+}
+function download(r) {
+  const a = document.createElement('a');
+  a.href = r.url; a.download = `${r.name}.${r.ext}`; a.rel = 'noopener';
+  document.body.append(a); a.click(); a.remove();
+  r.saved = true; renderRecordings();
+}
+async function saveAs(r) {
+  try {
+    const handle = await window.showSaveFilePicker({ suggestedName: `${r.name}.${r.ext}`, types: [{ description: 'Video', accept: { [r.mime.split(';')[0]]: ['.' + r.ext] } }] });
+    const w = await handle.createWritable(); await w.write(r.blob); await w.close();
+    r.saved = true; renderRecordings(); toast('ok', 'Saved', handle.name);
+  } catch (e) { if (e.name !== 'AbortError') { toast('warn', 'Save dialog unavailable', 'Falling back to a normal download.'); download(r); } }
+}
+
+/* ---------- UI state ---------- */
+function setPhase(p) {
+  phase = p;
+  const active = p !== 'idle';
+  // lock settings while busy, but keep live-adjustable controls (.live) usable
+  $('#fs').classList.toggle('locked', active);
+  $$('#fs input, #fs select, #fs button').forEach(el => { el.disabled = active && !el.closest('.live'); });
+  if (!active) updateDerived();
+  $('#viewer').classList.toggle('paused', p === 'paused');
+  $('#hud').classList.toggle('paused', p === 'paused');
+  $('#recLabel').textContent = p === 'paused' ? 'PAUSED' : p === 'countdown' ? 'READY' : 'REC';
+  updateButtons();
+}
+function updateButtons() {
+  const sb = $('#startBtn'), lbl = $('span', sb);
+  const recording = phase === 'recording' || phase === 'paused';
+  sb.classList.toggle('stop', recording || phase === 'countdown');
+  sb.disabled = phase === 'acquiring' || phase === 'stopping';
+  lbl.textContent = phase === 'acquiring' ? 'Starting…' : phase === 'stopping' ? 'Saving…' : phase === 'countdown' ? 'Cancel' : recording ? 'Stop recording' : 'Start recording';
+  sb.querySelector('svg').innerHTML = recording ? '<rect x="3" y="3" width="10" height="10" rx="2" fill="currentColor"/>' : '<circle cx="8" cy="8" r="6" fill="currentColor"/>';
+  const pb = $('#pauseBtn');
+  pb.disabled = !recording;
+  $('span', pb).textContent = phase === 'paused' ? 'Resume' : 'Pause';
+  pb.classList.toggle('on', phase === 'paused');
+  const mb = $('#muteBtn');
+  mb.disabled = !(rec && rec.micGain);
+  $('span', mb).textContent = rec && rec.micMuted ? 'Unmute mic' : 'Mute mic';
+  mb.classList.toggle('on', !!(rec && rec.micMuted));
+  const cb = $('#camToggleBtn');
+  cb.disabled = !(rec && rec.compositor);
+  $('span', cb).textContent = live.visible ? 'Hide camera' : 'Show camera';
+  cb.classList.toggle('on', !live.visible);
+  const fb = $('#floatBtn');
+  fb.classList.toggle('hidden', !(rec && rec.pip));
+  fb.disabled = !(rec && rec.pip && rec.camStream);
+  $('span', fb).textContent = bubble ? 'Close bubble' : 'Float camera';
+}
+function toggleMute() {
+  if (!rec || !rec.micGain) return;
+  rec.micMuted = !rec.micMuted;
+  rec.micGain.gain.value = rec.micMuted ? 0 : readSettings().micGain / 100;
+  if (meters.mic) meters.mic.muted = rec.micMuted;
+  updateButtons();
+  toast('ok', rec.micMuted ? 'Microphone muted' : 'Microphone live', '', { timeout: 1800 });
+}
+function toggleCam() {
+  if (!rec || !rec.compositor) return;
+  live.visible = !live.visible; updateButtons();
+}
+
+/* ---------- wire up ---------- */
+function init() {
+  loadSettings();
+  buildFormatSelect();
+  renderChecks();
+  updateDerived();
+  setPhase('idle');
+  refreshDevices();
+  navigator.mediaDevices?.addEventListener?.('devicechange', refreshDevices);
+
+  $('#settings').addEventListener('submit', e => e.preventDefault());
+  $('#settings').addEventListener('input', e => {
+    const id = e.target.id;
+    if (id === 'micGain') {
+      $('#micGainOut').textContent = e.target.value + '%';
+      const g = e.target.value / 100;
+      if (rec && rec.micGain && !rec.micMuted) rec.micGain.gain.value = g;
+      if (micTest) micTest.gain.gain.value = g;
+    }
+    updateDerived();
+    if (['customBitrate', 'maxMin', 'filename'].includes(id)) validate(true);
+    saveSettings();
+  });
+  $('#settings').addEventListener('change', e => {
+    const t = e.target;
+    if (t.name === 'mode') {
+      updateDerived();
+      if (t.value !== 'screen' && !camPreview && CAP.userMedia) startCamPreview(true);
+      if (t.value === 'screen') stopCamPreview();
+      validate(true);
+    }
+    if (t.id === 'camDevice' && camPreview) startCamPreview();
+    if (t.id === 'micDevice' && micTest) { stopMicTest(); toggleMicTest(); }
+    if ((t.id === 'noiseSup') && micTest) { stopMicTest(); toggleMicTest(); }
+    updateDerived(); saveSettings();
+  });
+  $('#micGainOut').textContent = $('#micGain').value + '%';
+
+  $('#startBtn').onclick = () => { if (phase === 'idle') start(); else if (phase === 'countdown') cancelCountdown(); else stop(); };
+  $('#pauseBtn').onclick = pause;
+  $('#muteBtn').onclick = toggleMute;
+  $('#camToggleBtn').onclick = toggleCam;
+  $('#floatBtn').onclick = async () => {
+    if (bubble) { closeBubble(); return; }
+    if (!rec || !rec.camStream) return;
+    try { await openBubble(rec.camStream, rec.s.camMirror); } catch (e) { toast('err', 'Couldn’t open camera bubble', e.message); }
+  };
+  $('#micTestBtn').onclick = toggleMicTest;
+  $('#camPrevBtn').onclick = () => camPreview ? stopCamPreview() : startCamPreview(false);
+  $('#helpBtn').onclick = () => $('#help').showModal();
+  $('#helpClose').onclick = () => $('#help').close();
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && phase === 'countdown') { e.preventDefault(); cancelCountdown(); return; }
+    if (!(e.altKey && e.shiftKey) || e.ctrlKey || e.metaKey) return;
+    const k = e.code;
+    if (k === 'KeyR') { e.preventDefault(); $('#startBtn').click(); }
+    else if (k === 'KeyP') { e.preventDefault(); pause(); }
+    else if (k === 'KeyM') { e.preventDefault(); toggleMute(); }
+    else if (k === 'KeyC') { e.preventDefault(); toggleCam(); }
+  });
+
+  window.addEventListener('beforeunload', e => {
+    if (phase !== 'idle' || recordings.some(r => !r.saved)) { e.preventDefault(); e.returnValue = ''; }
+  });
+  $('#preview').addEventListener('ended', () => {});
+  if (radio('mode') !== 'screen') { $('#camOv').textContent = 'Click “Turn on preview” to check your camera'; }
+}
+init();
+
+// expose for diagnostics/testing
+window.__scp = { fixWebmDuration, filenameError, expandName, validate, readSettings, mimeCandidates, CAP };
+})();
+</script>
+</body>
+</html>

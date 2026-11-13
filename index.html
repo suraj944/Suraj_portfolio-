@@ -50,6 +50,7 @@
       <symbol id="i-table" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10"/></symbol>
       <symbol id="i-pie" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12Z"/><path d="M15 3.8A8.5 8.5 0 0 1 20.2 9H15Z"/></symbol>
       <symbol id="i-pen" viewBox="0 0 24 24"><path d="m14.5 5.5 4 4L8 20H4v-4Z"/><path d="m12.5 7.5 4 4M3.5 20.5h17"/></symbol>
+      <symbol id="i-record" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12.5" rx="2"/><path d="M8 20.5h8M12 17v3.5"/><circle cx="12" cy="10.75" r="2.5"/></symbol>
       <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
     </defs>
   </svg>
@@ -294,6 +295,49 @@
           <h3 class="section-title section-title--first">Featured</h3>
 
           <div class="feature-list">
+
+          <article class="card feature" aria-labelledby="screencast-title">
+            <div class="feature-body">
+              <div class="project-head">
+                <span class="project-icon" aria-hidden="true"><svg class="icon"><use href="#i-record"/></svg></span>
+                <h4 class="project-title" id="screencast-title">ScreenCast Pro: Full HD Screen Recorder</h4>
+              </div>
+
+              <p class="project-desc">
+                A professional screen recorder for Windows that records your screen, any window or your webcam
+                in Full HD (up to 4K / 60 fps) with system audio and microphone, and ships with a proper setup wizard.
+              </p>
+
+              <ul class="feature-points">
+                <li>Records the entire screen or any window at 720p, 1080p, 1440p or 4K, as MP4 (H.264), WebM or MKV, with quality presets or a custom bitrate</li>
+                <li>System audio and microphone mixed live, with level meters, a mic test and noise suppression; webcam overlay drawn into the video or as a floating bubble</li>
+                <li>System-wide hotkeys (<code>Alt+Shift+R</code> to start/stop), pause/resume, countdown, auto-stop timer and a tray icon menu</li>
+                <li>Saves to a folder you choose <i>while</i> recording, so nothing is lost if the PC crashes; interrupted recordings are recovered on the next launch</li>
+                <li>Validates settings, file names, folder permissions and free disk space; installer with shortcuts, upgrade-in-place and a clean uninstaller</li>
+              </ul>
+
+              <ul class="chips">
+                <li class="chip">JavaScript</li>
+                <li class="chip">Electron</li>
+                <li class="chip">MediaRecorder API</li>
+                <li class="chip">Web Audio</li>
+                <li class="chip">NSIS</li>
+                <li class="chip">Windows</li>
+              </ul>
+
+              <div class="project-links">
+                <a href="https://github.com/suraj944/ScreenCast-Pro/releases/latest/download/ScreenCast-Pro-Setup-1.0.0.exe">
+                  <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for Windows <span class="muted">(installer, 107 MB)</span>
+                </a>
+                <a href="./assets/projects/screencast/screen-recorder.html" target="_blank" rel="noopener">
+                  <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg>Try it in your browser
+                </a>
+                <a href="https://github.com/suraj944/ScreenCast-Pro" target="_blank" rel="noopener">
+                  <svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Source code
+                </a>
+              </div>
+            </div>
+          </article>
 
           <article class="card feature" aria-labelledby="screendraw-title">
             <div class="feature-body">
